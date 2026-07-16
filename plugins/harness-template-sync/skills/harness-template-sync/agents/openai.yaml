@@ -1,0 +1,4 @@
+interface:
+  display_name: "Harness Template Sync"
+  short_description: "Migrate and govern Harness context"
+  default_prompt: "Use $harness-template-sync to bootstrap, adopt, refresh, or govern Harness from template and target artifacts; preserve project facts and extensions, enforce thin prompts, thick artifacts/context, and thin skills, then run target gates."

@@ -1,0 +1,20 @@
+{
+  "name": "harness-template-sync",
+  "interface": {
+    "displayName": "Harness Template Sync"
+  },
+  "plugins": [
+    {
+      "name": "harness-template-sync",
+      "source": {
+        "source": "local",
+        "path": "./plugins/harness-template-sync"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
