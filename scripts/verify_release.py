@@ -11,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 NAME = "harness-template-sync"
+MARKETPLACE_NAME = "fueav-harness-sync"
 PLUGIN = ROOT / "plugins" / NAME
 SKILL = PLUGIN / "skills" / NAME
 
@@ -52,10 +53,10 @@ def main() -> int:
         errors.append("README must document Codex installation")
     for command in (
         f"codex plugin marketplace add Fueav/{NAME}",
-        f"codex plugin marketplace upgrade {NAME}",
+        f"codex plugin marketplace upgrade {MARKETPLACE_NAME}",
         f"codex plugin marketplace remove {NAME}",
-        f"codex plugin add {NAME}@{NAME}",
-        f"claude plugin update {NAME}@{NAME}",
+        f"codex plugin add {NAME}@{MARKETPLACE_NAME}",
+        f"claude plugin update {NAME}@{MARKETPLACE_NAME}",
     ):
         require(command in readme_text, f"README must document: {command}", errors)
 
@@ -83,18 +84,43 @@ def main() -> int:
         require(manifest.get("repository") == f"https://github.com/Fueav/{NAME}", f"{label} repository is wrong", errors)
 
     codex_plugins = codex_market.get("plugins", [])
-    require(codex_market.get("name") == NAME, "Codex marketplace name is wrong", errors)
+    codex_marketplace_name = codex_market.get("name")
+    claude_marketplace_name = claude_market.get("name")
+    require(codex_marketplace_name == MARKETPLACE_NAME, "Codex marketplace name is wrong", errors)
+    require(claude_marketplace_name == MARKETPLACE_NAME, "Claude marketplace name is wrong", errors)
+    require(
+        codex_marketplace_name != NAME and claude_marketplace_name != NAME,
+        "marketplace name must differ from plugin name",
+        errors,
+    )
     require(len(codex_plugins) == 1, "Codex marketplace must publish exactly one plugin", errors)
     if len(codex_plugins) == 1:
         require(codex_plugins[0].get("name") == NAME, "Codex marketplace plugin name is wrong", errors)
-        require(codex_plugins[0].get("source", {}).get("path") == f"./plugins/{NAME}", "Codex marketplace source is wrong", errors)
+        codex_source = codex_plugins[0].get("source", {}).get("path")
+        require(codex_source == f"./plugins/{NAME}", "Codex marketplace source is wrong", errors)
+        if codex_source:
+            codex_plugin = (ROOT / codex_source).resolve()
+            require(codex_plugin == PLUGIN.resolve(), "Codex marketplace source resolves incorrectly", errors)
+            require(
+                (codex_plugin / "skills" / NAME / "SKILL.md").is_file(),
+                "Codex marketplace Skill entrypoint is missing",
+                errors,
+            )
 
     claude_plugins = claude_market.get("plugins", [])
-    require(claude_market.get("name") == NAME, "Claude marketplace name is wrong", errors)
     require(len(claude_plugins) == 1, "Claude marketplace must publish exactly one plugin", errors)
     if len(claude_plugins) == 1:
         require(claude_plugins[0].get("name") == NAME, "Claude marketplace plugin name is wrong", errors)
-        require(claude_plugins[0].get("source") == f"./plugins/{NAME}", "Claude marketplace source is wrong", errors)
+        claude_source = claude_plugins[0].get("source")
+        require(claude_source == f"./plugins/{NAME}", "Claude marketplace source is wrong", errors)
+        if claude_source:
+            claude_plugin = (ROOT / claude_source).resolve()
+            require(claude_plugin == PLUGIN.resolve(), "Claude marketplace source resolves incorrectly", errors)
+            require(
+                (claude_plugin / "skills" / NAME / "SKILL.md").is_file(),
+                "Claude marketplace Skill entrypoint is missing",
+                errors,
+            )
         require(claude_plugins[0].get("version") == version, "Claude marketplace version must match VERSION", errors)
 
     files = {
