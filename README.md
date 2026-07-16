@@ -7,9 +7,11 @@ The plugin is intentionally thin: its Skill contains no migration program, file 
 ## Install in Codex
 
 ```bash
-codex plugin marketplace add Fueav/harness-template-sync --ref v1.0.1
+codex plugin marketplace add Fueav/harness-template-sync
 codex plugin add harness-template-sync@harness-template-sync
 ```
+
+The default install intentionally omits `--ref`, so marketplace upgrades follow the repository's default branch. Use a release tag only for an intentionally immutable installation; a tagged marketplace remains pinned until it is rebound.
 
 ## Install in Claude Code
 
@@ -17,6 +19,32 @@ codex plugin add harness-template-sync@harness-template-sync
 claude plugin marketplace add Fueav/harness-template-sync
 claude plugin install harness-template-sync@harness-template-sync --scope user
 ```
+
+## Upgrade
+
+For an unpinned Codex marketplace:
+
+```bash
+codex plugin marketplace upgrade harness-template-sync
+codex plugin add harness-template-sync@harness-template-sync
+```
+
+If Codex was originally installed with `--ref`, rebind the marketplace once, then future upgrades can use the commands above:
+
+```bash
+codex plugin marketplace remove harness-template-sync
+codex plugin marketplace add Fueav/harness-template-sync
+codex plugin add harness-template-sync@harness-template-sync
+```
+
+For Claude Code:
+
+```bash
+claude plugin marketplace update harness-template-sync
+claude plugin update harness-template-sync@harness-template-sync
+```
+
+Restart the client or open a new session after upgrading.
 
 ## Verify a source checkout
 

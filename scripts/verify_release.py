@@ -33,6 +33,32 @@ def main() -> int:
     version = version_path.read_text().strip() if version_path.exists() else ""
     require(bool(re.fullmatch(r"\d+\.\d+\.\d+", version)), "VERSION must be strict semver", errors)
 
+    readme_path = ROOT / "README.md"
+    readme_text = readme_path.read_text() if readme_path.exists() else ""
+    codex_heading = "## Install in Codex"
+    if codex_heading in readme_text:
+        codex_install = readme_text.split(codex_heading, 1)[1].split("\n## ", 1)[0]
+        codex_add_commands = [
+            line.strip()
+            for line in codex_install.splitlines()
+            if line.strip().startswith("codex plugin marketplace add ")
+        ]
+        require(
+            codex_add_commands == [f"codex plugin marketplace add Fueav/{NAME}"],
+            "Codex default install must use one unpinned marketplace command",
+            errors,
+        )
+    else:
+        errors.append("README must document Codex installation")
+    for command in (
+        f"codex plugin marketplace add Fueav/{NAME}",
+        f"codex plugin marketplace upgrade {NAME}",
+        f"codex plugin marketplace remove {NAME}",
+        f"codex plugin add {NAME}@{NAME}",
+        f"claude plugin update {NAME}@{NAME}",
+    ):
+        require(command in readme_text, f"README must document: {command}", errors)
+
     json_paths = [
         PLUGIN / ".codex-plugin" / "plugin.json",
         PLUGIN / ".claude-plugin" / "plugin.json",

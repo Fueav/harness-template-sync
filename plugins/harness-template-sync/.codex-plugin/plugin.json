@@ -1,6 +1,6 @@
 {
   "name": "harness-template-sync",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Migrates and governs Harness architecture while preserving project-owned context and extensions.",
   "author": {
     "name": "Fueav",

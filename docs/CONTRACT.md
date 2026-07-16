@@ -1,6 +1,6 @@
 # Harness Template Sync Contract
 
-Status: v1.0.1 release contract
+Status: v1.0.2 release contract
 
 ## Decision
 
@@ -110,6 +110,8 @@ The slogan stays in the prompt; its explanation stays in the artifact. No new po
 ## Distributed package
 
 The release has its own repository, semver, tag, GitHub release, Codex marketplace, and Claude Code marketplace. `VERSION`, both plugin manifests, and both marketplace entries must match. Its version is independent from template and Harness Driven Development versions.
+
+Normal Codex marketplace installs track the repository's default branch so `marketplace upgrade` can advance across releases. A release tag is an explicit immutable pin, not the default install path. Release validation rejects a pinned default install and requires documented Codex and Claude Code update flows.
 
 The distributed Skill contains exactly:
 
