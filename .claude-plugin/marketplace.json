@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "harness-template-sync",
+  "name": "fueav-harness-sync",
   "description": "Independent Harness migration and lifecycle-governance skills.",
   "owner": {
     "name": "Fueav"
@@ -10,7 +10,7 @@
       "name": "harness-template-sync",
       "source": "./plugins/harness-template-sync",
       "description": "Migrates and governs Harness architecture while preserving project-owned context and extensions.",
-      "version": "1.0.2",
+      "version": "2.0.0",
       "author": {
         "name": "Fueav"
       },
