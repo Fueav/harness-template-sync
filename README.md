@@ -7,7 +7,7 @@ The plugin is intentionally thin: its Skill contains no migration program, file 
 ## Install in Codex
 
 ```bash
-codex plugin marketplace add Fueav/harness-template-sync --ref v1.0.0
+codex plugin marketplace add Fueav/harness-template-sync --ref v1.0.1
 codex plugin add harness-template-sync@harness-template-sync
 ```
 

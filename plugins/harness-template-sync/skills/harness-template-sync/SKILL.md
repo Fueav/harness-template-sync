@@ -9,6 +9,7 @@ Use this Skill as a router for semantic repository work, never as a migration en
 
 ## Authority
 
+- Reference template: `git@github.com:moss-site/ai-first-go-template.git`.
 - Target instructions, artifacts, Git history, custom gates, and native checks own project facts.
 - The selected template `BLUEPRINT.md` and `harness/scaffold_manifest.json` own the shared baseline.
 - Inject and restore the repository constitution: thin prompts, thick artifacts and context, thin skills.

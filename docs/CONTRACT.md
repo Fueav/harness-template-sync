@@ -1,6 +1,6 @@
 # Harness Template Sync Contract
 
-Status: v1.0.0 release contract
+Status: v1.0.1 release contract
 
 ## Decision
 
