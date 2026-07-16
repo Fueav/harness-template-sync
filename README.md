@@ -16,7 +16,7 @@ The default install intentionally omits `--ref`, so marketplace upgrades follow 
 ## Install in Claude Code
 
 ```bash
-claude plugin marketplace add Fueav/harness-template-sync
+claude plugin marketplace add Fueav/harness-template-sync --scope user
 claude plugin install harness-template-sync@fueav-harness-sync --scope user
 ```
 
@@ -37,8 +37,8 @@ For Claude Code:
 
 ```bash
 claude plugin uninstall harness-template-sync@harness-template-sync --scope user
-claude plugin marketplace remove harness-template-sync
-claude plugin marketplace add Fueav/harness-template-sync
+claude plugin marketplace remove harness-template-sync --scope user
+claude plugin marketplace add Fueav/harness-template-sync --scope user
 claude plugin install harness-template-sync@fueav-harness-sync --scope user
 ```
 
@@ -58,7 +58,15 @@ claude plugin update harness-template-sync@fueav-harness-sync
 ```bash
 python3 scripts/test_verify_release.py
 python3 scripts/verify_release.py
+CODEX_PYTHON="${CODEX_PYTHON:-python3}"
+CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
+"$CODEX_PYTHON" "$CODEX_HOME/skills/.system/plugin-creator/scripts/validate_plugin.py" plugins/harness-template-sync
+"$CODEX_PYTHON" "$CODEX_HOME/skills/.system/skill-creator/scripts/quick_validate.py" plugins/harness-template-sync/skills/harness-template-sync
+claude plugin validate plugins/harness-template-sync --strict
+claude plugin validate . --strict
 ```
+
+`CODEX_PYTHON` must point to a Python environment with PyYAML for the Codex plugin validator.
 
 This repository is packaged and released independently from `harness-driven-development`. The two plugins do not call or install each other: this plugin prepares and maintains the repository-level Harness contract that `harness-driven-development` later consumes during ordinary product work. `harnessctl` remains execution-layer infrastructure inside migrated Harness projects; it is not the migration controller.
 
@@ -73,4 +81,13 @@ codex plugin marketplace add Fueav/harness-template-sync --ref v1.0.2
 codex plugin add harness-template-sync@harness-template-sync
 ```
 
-Claude Code can use the same remove-and-reinstall sequence with the `v1.0.2` marketplace source. Published tags are never moved.
+For Claude Code:
+
+```bash
+claude plugin uninstall harness-template-sync@fueav-harness-sync --scope user
+claude plugin marketplace remove fueav-harness-sync --scope user
+claude plugin marketplace add Fueav/harness-template-sync@v1.0.2 --scope user
+claude plugin install harness-template-sync@harness-template-sync --scope user
+```
+
+Published tags are never moved.
