@@ -14,6 +14,14 @@ NAME = "harness-template-sync"
 MARKETPLACE_NAME = "fueav-harness-sync"
 PLUGIN = ROOT / "plugins" / NAME
 SKILL = PLUGIN / "skills" / NAME
+COMPATIBILITY = ROOT / "contracts" / "template-compatibility.json"
+EXPECTED_COMPATIBILITY = {
+    "schema_version": 1,
+    "template_contracts": {
+        "scaffold_manifest": [1],
+        "workflow_registry": [2, 3],
+    },
+}
 
 
 def load_json(path: Path) -> dict:
@@ -171,6 +179,11 @@ def main() -> int:
         if path.is_file()
     } if SKILL.exists() else set()
     require(files == {"SKILL.md", "agents/openai.yaml"}, f"Skill package has unexpected files: {sorted(files)}", errors)
+    require(
+        not any(path.is_symlink() for path in SKILL.rglob("*")),
+        "Skill package must not contain symlinks",
+        errors,
+    )
 
     skill_path = SKILL / "SKILL.md"
     skill_text = skill_path.read_text() if skill_path.exists() else ""
@@ -187,6 +200,15 @@ def main() -> int:
     require("bootstrap, adopt, refresh, or govern" in openai_text, "OpenAI default prompt must expose all modes", errors)
 
     require((ROOT / "docs" / "CONTRACT.md").is_file(), "missing docs/CONTRACT.md authority", errors)
+    try:
+        compatibility = load_json(COMPATIBILITY)
+        require(
+            compatibility == EXPECTED_COMPATIBILITY,
+            "template compatibility manifest has an invalid contract",
+            errors,
+        )
+    except ValueError as exc:
+        errors.append(str(exc))
     require(not any(SKILL.glob("scripts/**/*")), "Skill must not bundle scripts", errors)
     require(not any(SKILL.glob("references/**/*")), "Skill must not bundle a playbook", errors)
     plugin_dirs = {

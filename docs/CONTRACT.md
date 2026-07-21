@@ -1,6 +1,6 @@
 # Harness Template Sync Contract
 
-Status: v2.0.0 release contract
+Status: v2 release contract
 
 ## Decision
 
@@ -14,7 +14,7 @@ It is a packaging and release peer of `harness-driven-development`, but the two 
 
 This is contract compatibility, not package dependency or lockstep versioning:
 
-- Harness Template Sync currently understands `harness/scaffold_manifest.json` schema version 1.
+- Supported Template contract versions are defined once in `contracts/template-compatibility.json` and enforced by release validation.
 - A template content release does not require a Sync release unless the manifest schema, migration semantics, or safety contract changes.
 - A Harness Driven Development release does not require a Sync release unless the repository contract it consumes changes.
 - `govern` follows the target repository's declared `HARNESS-MAINTENANCE` workflow directly; it does not invoke the Harness Driven Development Skill.

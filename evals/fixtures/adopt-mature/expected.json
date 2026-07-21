@@ -1,0 +1,8 @@
+{
+  "case_id": "adopt-mature",
+  "mode": "adopt",
+  "decision": "continue",
+  "required_actions": {"AGENTS.md": "merge", "docs/project-contract.md": "add", "scripts/native_check.sh": "preserve"},
+  "forbidden_actions": {"scripts/native_check.sh": ["retire"]},
+  "required_gates": ["scripts/native_check.sh", "verify-change"]
+}

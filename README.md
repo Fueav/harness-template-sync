@@ -58,6 +58,8 @@ claude plugin update harness-template-sync@fueav-harness-sync
 ```bash
 python3 scripts/test_verify_release.py
 python3 scripts/verify_release.py
+python3 scripts/test_verify_evals.py
+python3 scripts/verify_evals.py
 CODEX_PYTHON="${CODEX_PYTHON:-python3}"
 CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 "$CODEX_PYTHON" "$CODEX_HOME/skills/.system/plugin-creator/scripts/validate_plugin.py" plugins/harness-template-sync
@@ -66,7 +68,7 @@ claude plugin validate plugins/harness-template-sync --strict
 claude plugin validate . --strict
 ```
 
-`CODEX_PYTHON` must point to a Python environment with PyYAML for the Codex plugin validator.
+`CODEX_PYTHON` must point to a Python environment with PyYAML for the Codex plugin validator. Eval validation is deterministic and local; external model execution is deliberately not bundled in this repository.
 
 This repository is packaged and released independently from `harness-driven-development`. The two plugins do not call or install each other: this plugin prepares and maintains the repository-level Harness contract that `harness-driven-development` later consumes during ordinary product work. `harnessctl` remains execution-layer infrastructure inside migrated Harness projects; it is not the migration controller.
 

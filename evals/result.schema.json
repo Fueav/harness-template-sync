@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["results"],
+  "properties": {
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "mode", "decision", "path_decisions", "blockers", "target_gates", "evidence"],
+        "properties": {
+          "case_id": {"type": "string"},
+          "mode": {"enum": ["bootstrap", "adopt", "refresh", "govern"]},
+          "decision": {"enum": ["continue", "blocked"]},
+          "path_decisions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["path", "action"],
+              "properties": {
+                "path": {"type": "string"},
+                "action": {"enum": ["preserve", "add", "merge", "relocate", "retire", "blocked"]}
+              }
+            }
+          },
+          "blockers": {"type": "array", "items": {"type": "string"}},
+          "target_gates": {"type": "array", "items": {"type": "string"}},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "prompt_skill_line_delta": {"type": "integer"}
+        }
+      }
+    }
+  }
+}

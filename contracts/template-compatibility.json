@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "template_contracts": {
+    "scaffold_manifest": [1],
+    "workflow_registry": [2, 3]
+  }
+}

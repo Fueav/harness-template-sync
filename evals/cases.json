@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {"id": "bootstrap-blank", "mode": "bootstrap"},
+    {"id": "adopt-mature", "mode": "adopt"},
+    {"id": "refresh-custom-gates", "mode": "refresh"},
+    {"id": "govern-net-negative", "mode": "govern"},
+    {"id": "ambiguous-ownership-stop", "mode": "refresh"},
+    {"id": "dirty-target-stop", "mode": "adopt"}
+  ]
+}
