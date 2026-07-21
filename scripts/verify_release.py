@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -14,6 +15,14 @@ NAME = "harness-template-sync"
 MARKETPLACE_NAME = "fueav-harness-sync"
 PLUGIN = ROOT / "plugins" / NAME
 SKILL = PLUGIN / "skills" / NAME
+COMPATIBILITY = ROOT / "contracts" / "template-compatibility.json"
+EXPECTED_COMPATIBILITY = {
+    "schema_version": 1,
+    "template_contracts": {
+        "scaffold_manifest": [1],
+        "workflow_registry": [2, 3],
+    },
+}
 
 
 def load_json(path: Path) -> dict:
@@ -171,9 +180,18 @@ def main() -> int:
         if path.is_file()
     } if SKILL.exists() else set()
     require(files == {"SKILL.md", "agents/openai.yaml"}, f"Skill package has unexpected files: {sorted(files)}", errors)
+    require(
+        not any(path.is_symlink() for path in SKILL.rglob("*")),
+        "Skill package must not contain symlinks",
+        errors,
+    )
 
     skill_path = SKILL / "SKILL.md"
-    skill_text = skill_path.read_text() if skill_path.exists() else ""
+    skill_text = (
+        skill_path.read_text()
+        if skill_path.is_file() and not skill_path.is_symlink()
+        else ""
+    )
     require(len(skill_text.splitlines()) <= 30, "SKILL.md must be at most 30 lines", errors)
     require(len(skill_text.split()) <= 200, "SKILL.md must be at most 200 words", errors)
     for token in ("bootstrap", "adopt", "refresh", "govern", "HARNESS-MAINTENANCE"):
@@ -182,11 +200,24 @@ def main() -> int:
         require(principle in skill_text.lower(), f"SKILL.md must include {principle}", errors)
 
     openai_path = SKILL / "agents" / "openai.yaml"
-    openai_text = openai_path.read_text() if openai_path.exists() else ""
+    openai_text = (
+        openai_path.read_text()
+        if openai_path.is_file() and not openai_path.is_symlink()
+        else ""
+    )
     require("$harness-template-sync" in openai_text, "OpenAI default prompt must invoke the Skill", errors)
     require("bootstrap, adopt, refresh, or govern" in openai_text, "OpenAI default prompt must expose all modes", errors)
 
     require((ROOT / "docs" / "CONTRACT.md").is_file(), "missing docs/CONTRACT.md authority", errors)
+    try:
+        compatibility = load_json(COMPATIBILITY)
+        require(
+            compatibility == EXPECTED_COMPATIBILITY,
+            "template compatibility manifest has an invalid contract",
+            errors,
+        )
+    except ValueError as exc:
+        errors.append(str(exc))
     require(not any(SKILL.glob("scripts/**/*")), "Skill must not bundle scripts", errors)
     require(not any(SKILL.glob("references/**/*")), "Skill must not bundle a playbook", errors)
     plugin_dirs = {
@@ -199,6 +230,18 @@ def main() -> int:
     if errors:
         for error in errors:
             print(f"FAIL: {error}")
+        return 1
+    eval_contract = subprocess.run(
+        [sys.executable, "scripts/verify_evals.py"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if eval_contract.returncode != 0:
+        print(eval_contract.stdout, end="")
+        print(eval_contract.stderr, end="", file=sys.stderr)
+        print("FAIL: deterministic eval contract failed")
         return 1
     print(f"release contract ok: {NAME} {version}")
     print(f"skill package ok: {len(skill_text.splitlines())} lines, {len(skill_text.split())} words")

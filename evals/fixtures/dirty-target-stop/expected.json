@@ -1,0 +1,7 @@
+{
+  "case_id": "dirty-target-stop",
+  "mode": "adopt",
+  "decision": "blocked",
+  "required_actions": {".dirty-change": "blocked"},
+  "required_blockers": ["unrelated dirty changes"]
+}

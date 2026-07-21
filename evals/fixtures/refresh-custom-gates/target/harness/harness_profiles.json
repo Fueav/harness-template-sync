@@ -1,0 +1,1 @@
+{"schema_version":2,"custom_gates":{"project_contract":{"run":"scripts/gates/custom_check.sh"}},"symlinks":[],"profiles":{},"gate_sets":{},"evidence_sets":{},"conditional_gates":{},"gate_artifacts":{}}

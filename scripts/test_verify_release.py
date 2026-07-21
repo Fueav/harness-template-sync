@@ -80,6 +80,45 @@ class ReleaseValidatorTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0, output)
                 self.assertIn("declared Skill path is invalid", output)
 
+    def test_rejects_invalid_template_compatibility(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            path = checkout / "contracts/template-compatibility.json"
+            document = json.loads(path.read_text())
+            document["template_contracts"]["workflow_registry"].append(4)
+            path.write_text(json.dumps(document, indent=2) + "\n")
+
+            result = self.run_validator(checkout)
+            output = result.stdout + result.stderr
+            self.assertNotEqual(result.returncode, 0, output)
+            self.assertIn("template compatibility manifest has an invalid contract", output)
+
+    def test_rejects_extra_skill_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            path = checkout / "plugins" / NAME / "skills" / NAME / "references" / "playbook.md"
+            path.parent.mkdir(parents=True)
+            path.write_text("duplicate method\n")
+
+            result = self.run_validator(checkout)
+            output = result.stdout + result.stderr
+            self.assertNotEqual(result.returncode, 0, output)
+            self.assertIn("Skill package has unexpected files", output)
+
+    def test_rejects_skill_symlink(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            path = checkout / "plugins" / NAME / "skills" / NAME / "SKILL.md"
+            external = Path(temp_dir) / "external-skill.md"
+            external.write_text(path.read_text())
+            path.unlink()
+            path.symlink_to(external)
+
+            result = self.run_validator(checkout)
+            output = result.stdout + result.stderr
+            self.assertNotEqual(result.returncode, 0, output)
+            self.assertIn("Skill package must not contain symlinks", output)
+
 
 if __name__ == "__main__":
     unittest.main()

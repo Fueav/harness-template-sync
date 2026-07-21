@@ -1,0 +1,8 @@
+{
+  "case_id": "govern-net-negative",
+  "mode": "govern",
+  "decision": "continue",
+  "required_actions": {"AGENTS.md": "merge", "docs/project-context.md": "add", ".agents/skills/local/SKILL.md": "retire"},
+  "required_gates": ["HARNESS-MAINTENANCE", "verify-change"],
+  "max_prompt_skill_line_delta": 0
+}
