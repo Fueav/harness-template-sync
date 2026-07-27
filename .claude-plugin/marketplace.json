@@ -10,7 +10,7 @@
       "name": "harness-template-sync",
       "source": "./plugins/harness-template-sync",
       "description": "Migrates and governs Harness architecture while preserving project-owned context and extensions.",
-      "version": "2.0.1",
+      "version": "2.0.2",
       "author": {
         "name": "Fueav"
       },
