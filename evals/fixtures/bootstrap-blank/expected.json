@@ -2,7 +2,8 @@
   "case_id": "bootstrap-blank",
   "mode": "bootstrap",
   "decision": "continue",
-  "required_actions": {"README.md": "preserve", "AGENTS.md": "add", "BLUEPRINT.md": "add", "harness/harness.lock": "add"},
+  "required_actions": {"README.md": "preserve", "AGENTS.md": "add", "BLUEPRINT.md": "add", "harness/harness.lock": "add", "harness/scaffold.lock": "add"},
   "forbidden_additions": ["specs/example/spec.md", ".agents/skills/example/SKILL.md"],
-  "required_gates": ["verify-change"]
+  "required_gates": ["harnessctl scaffold record", "harnessctl scaffold audit", "verify-change"],
+  "required_evidence": ["converged scaffold audit"]
 }

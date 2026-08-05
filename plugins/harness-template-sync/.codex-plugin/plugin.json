@@ -1,6 +1,6 @@
 {
   "name": "harness-template-sync",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Routes Harness template sync requests to the packaged Skill.",
   "author": {
     "name": "Fueav",

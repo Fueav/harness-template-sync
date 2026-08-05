@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import subprocess
@@ -13,6 +14,18 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SKILL_FILES = (
+    Path("plugins/harness-template-sync/skills/harness-template-sync/SKILL.md"),
+    Path("plugins/harness-template-sync/skills/harness-template-sync/agents/openai.yaml"),
+)
+
+
+def skill_package_sha256(root: Path) -> str:
+    digest = hashlib.sha256()
+    for relative in SKILL_FILES:
+        digest.update(relative.as_posix().encode("utf-8") + b"\0")
+        digest.update((root / relative).read_bytes() + b"\0")
+    return digest.hexdigest()
 
 
 class EvalContractTests(unittest.TestCase):
@@ -47,12 +60,16 @@ class EvalContractTests(unittest.TestCase):
                 ],
                 "blockers": expected.get("required_blockers", []),
                 "target_gates": expected.get("required_gates", []),
-                "evidence": ["fixture evidence"],
+                "evidence": expected.get("required_evidence", ["fixture evidence"]),
             }
             if "max_prompt_skill_line_delta" in expected:
                 result["prompt_skill_line_delta"] = expected["max_prompt_skill_line_delta"]
             results.append(result)
-        return {"results": results}
+        return {
+            "schema_version": 1,
+            "skill_package_sha256": skill_package_sha256(checkout),
+            "results": results,
+        }
 
     def test_accepts_fixture_contract_and_complete_results(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -104,6 +121,19 @@ class EvalContractTests(unittest.TestCase):
             output = result.stdout + result.stderr
             self.assertNotEqual(result.returncode, 0, output)
             self.assertIn("missing blocker", output)
+
+    def test_rejects_stale_skill_package_results(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            payload = self.valid_results(checkout)
+            skill = checkout / "plugins/harness-template-sync/skills/harness-template-sync/SKILL.md"
+            skill.write_text(skill.read_text() + "\n")
+            result_path = checkout / "results.json"
+            result_path.write_text(json.dumps(payload) + "\n")
+            result = self.run_validator(checkout, "--results", str(result_path))
+            output = result.stdout + result.stderr
+            self.assertNotEqual(result.returncode, 0, output)
+            self.assertIn("stale skill package digest", output)
 
 
 if __name__ == "__main__":

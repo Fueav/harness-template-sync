@@ -65,6 +65,7 @@ def main() -> int:
     summary: dict[str, object] = {
         "schema_version": 1,
         "components": {
+            "harnessctl": git_revision(harnessctl.parent),
             "template": git_revision(template),
             "template_sync": git_revision(ROOT),
             "harness_driven_development": git_revision(hdf),
@@ -82,10 +83,15 @@ def main() -> int:
         workflow_version = json.loads(
             (template / "docs/harness-workflows.json").read_text(encoding="utf-8")
         )["version"]
+        profile_version = json.loads(
+            (template / "harness/harness_profiles.json").read_text(encoding="utf-8")
+        )["schema_version"]
         if scaffold_version not in compatibility["scaffold_manifest"]:
             raise RuntimeError("Template scaffold manifest schema is unsupported")
         if workflow_version not in compatibility["workflow_registry"]:
             raise RuntimeError("Template workflow registry schema is unsupported")
+        if profile_version not in compatibility["harness_profiles"]:
+            raise RuntimeError("Template Harness profile schema is unsupported")
 
         lock = json.loads((template / "harness/harness.lock").read_text(encoding="utf-8"))
         expected_version = lock["version"]
@@ -117,7 +123,10 @@ def main() -> int:
         sync_release = run([sys.executable, "scripts/verify_release.py"], ROOT)
         summary["steps"]["template_sync_release"] = sync_release
         require_success(sync_release, "Template Sync release contract")
-        sync_evals = run([sys.executable, "scripts/verify_evals.py"], ROOT)
+        sync_evals = run(
+            [sys.executable, "scripts/verify_evals.py", "--results", "evals/results.json"],
+            ROOT,
+        )
         summary["steps"]["template_sync_evals"] = sync_evals
         require_success(sync_evals, "Template Sync eval contract")
 
@@ -125,7 +134,14 @@ def main() -> int:
         summary["steps"]["hdf_release"] = hdf_release
         require_success(hdf_release, "Harness Driven Development release contract")
         hdf_evals = run(
-            [sys.executable, "scripts/verify_evals.py", "--repository", str(template)],
+            [
+                sys.executable,
+                "scripts/verify_evals.py",
+                "--results",
+                "evals/results.json",
+                "--repository",
+                str(template),
+            ],
             hdf,
         )
         summary["steps"]["hdf_evals"] = hdf_evals
@@ -165,6 +181,55 @@ def main() -> int:
             )
             summary["steps"]["initialized_registry"] = init_registry
             require_success(init_registry, "Initialized Template registry")
+            record_step = run(
+                [
+                    str(harnessctl), "scaffold", "record",
+                    "--template", str(template),
+                    "--repo", str(disposable),
+                    "--resolution", "CODEOWNERS=adapted",
+                ],
+                disposable,
+            )
+            summary["steps"]["scaffold_record"] = record_step
+            require_success(record_step, "Scaffold record")
+            lock_text = str(record_step["stdout"])
+            lock_payload = json.loads(lock_text)
+            if lock_payload.get("template_commit") != git_revision(template):
+                raise RuntimeError("Scaffold record is not bound to the Template commit")
+            (disposable / "harness/scaffold.lock").write_text(lock_text, encoding="utf-8")
+            for label, command in (
+                ("git_init", ["git", "init", "-q"]),
+                ("git_email", ["git", "config", "user.email", "conformance@example.com"]),
+                ("git_name", ["git", "config", "user.name", "Harness Conformance"]),
+                ("git_add", ["git", "add", "-A"]),
+                ("git_commit", ["git", "commit", "-q", "-m", "conformance target"]),
+            ):
+                step = run(command, disposable)
+                summary["steps"][label] = step
+                require_success(step, label)
+            audit_step = run(
+                [
+                    str(harnessctl), "scaffold", "audit",
+                    "--template", str(template), "--repo", str(disposable),
+                ],
+                disposable,
+            )
+            summary["steps"]["scaffold_audit"] = audit_step
+            require_success(audit_step, "Scaffold audit")
+            audit = json.loads(str(audit_step["stdout"]))
+            if not audit.get("converged") or audit.get("target_dirty"):
+                raise RuntimeError("Scaffold audit did not prove a clean converged target")
+            rerender_step = run(
+                [
+                    str(harnessctl), "scaffold", "record",
+                    "--template", str(template), "--repo", str(disposable),
+                ],
+                disposable,
+            )
+            summary["steps"]["scaffold_record_rerender"] = rerender_step
+            require_success(rerender_step, "Scaffold record rerender")
+            if rerender_step["stdout"] != lock_text:
+                raise RuntimeError("Scaffold record is not deterministic")
             expected_links = {
                 "CLAUDE.md": "AGENTS.md",
                 ".claude/skills": "../.agents/skills",

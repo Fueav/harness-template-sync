@@ -2,7 +2,8 @@
   "case_id": "refresh-custom-gates",
   "mode": "refresh",
   "decision": "continue",
-  "required_actions": {"harness/harness_profiles.json": "merge", "scripts/gates/custom_check.sh": "preserve", "docs/harness-workflows.md": "merge"},
+  "required_actions": {"harness/harness_profiles.json": "merge", "harness/scaffold.lock": "add", "scripts/gates/custom_check.sh": "preserve", "docs/harness-workflows.md": "merge"},
   "forbidden_actions": {"scripts/gates/custom_check.sh": ["retire"]},
-  "required_gates": ["scripts/gates/custom_check.sh", "verify-release"]
+  "required_gates": ["harnessctl scaffold record", "harnessctl scaffold audit", "scripts/gates/custom_check.sh", "verify-release"],
+  "required_evidence": ["converged scaffold audit", "preserved custom gate"]
 }

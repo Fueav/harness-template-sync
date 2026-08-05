@@ -1,0 +1,27 @@
+{
+  "case_id": "refresh-hidden-release-gate",
+  "mode": "refresh",
+  "decision": "continue",
+  "required_actions": {
+    "AGENTS.md": "merge",
+    "harness/harness_profiles.json": "merge",
+    "harness/gates/release_self_tests.sh": "retire",
+    "harness/scaffold.lock": "regenerate",
+    "scripts/run_checker_self_tests.sh": "retire",
+    "scripts/production_release_gate.sh": "preserve"
+  },
+  "forbidden_actions": {
+    "harness/gates/release_self_tests.sh": ["preserve", "merge"],
+    "harness/scaffold.lock": ["preserve", "merge"],
+    "scripts/run_checker_self_tests.sh": ["preserve", "merge"],
+    "scripts/production_release_gate.sh": ["retire"]
+  },
+  "required_gates": [
+    "harnessctl scaffold record",
+    "harnessctl scaffold audit",
+    "scripts/production_release_gate.sh",
+    "verify-release"
+  ],
+  "forbidden_gates": ["harness/gates/release_self_tests.sh", "scripts/run_checker_self_tests.sh"],
+  "required_evidence": ["independent production gate", "no remaining wrapper callers", "executable production gate", "converged scaffold audit", "clean final candidate"]
+}

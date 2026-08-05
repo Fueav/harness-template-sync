@@ -1,12 +1,12 @@
 # Harness Template Sync Contract
 
-Status: v2 release contract
+Status: v2.1 release contract
 
 ## Decision
 
-Harness Template Sync is an independent Agent lifecycle plugin, not a generic migration program. The Agent reads a pinned `ai-first-go-template` checkout and the real target repository, reasons about project semantics, edits the target, and proves the result with target-native gates.
+Harness Template Sync is an independent Agent lifecycle plugin, not a generic migration program. The Agent reads a pinned `ai-first-go-template` checkout and the real target repository, reasons about project semantics, edits the target, and proves the result with deterministic scaffold audit plus target-native gates.
 
-It is a packaging and release peer of `harness-driven-development`, but the two have a directional repository-contract handoff. They do not contain, install, or call each other. This plugin produces and maintains the Harness-enabled repository contract that `harness-driven-development` can later consume during ordinary product work. `harnessctl` is part of the Harness execution architecture that a target may receive; it does not inspect, plan, apply, or roll back migrations.
+It is a packaging and release peer of `harness-driven-development`, but the two have a directional repository-contract handoff. They do not contain, install, or call each other. This plugin produces and maintains the Harness-enabled repository contract that `harness-driven-development` can later consume during ordinary product work. `harnessctl` performs read-only scaffold comparison and renders convergence records; it never chooses semantic merges, deletes content, or applies a migration.
 
 ## Integration boundary
 
@@ -39,7 +39,7 @@ Migration injects this constitution into both blank and established projects. Go
 | Template `harness/scaffold_manifest.json` | Managed paths, retired paths, merge strategies | Semantic deletion decisions |
 | This Skill | Trigger, authority pointers, compact workflow, stop conditions | Migration code, template inventory, project exceptions |
 | Agent | Comparison, reference tracing, semantic merge, scoped edits, evidence synthesis | Inventing undocumented project policy |
-| `harnessctl` | Pinned execution and post-migration Harness gates | Migration orchestration |
+| `harnessctl` | Pinned execution, scaffold audit and record rendering, evidence verification | Semantic merge decisions or migration application |
 
 Unknown target content is project-owned by default. A path used by a custom gate or live caller stays project-owned until that caller is deliberately migrated. A historical byte match can show origin but is never sufficient authority to delete.
 
@@ -78,14 +78,14 @@ Governance is event-driven: use it after material template updates, when size bu
 
 1. Select and pin the exact template commit or release; reject an unintentionally dirty source.
 2. Read the nearest target instructions and inspect its Git state, Harness assets, custom gates, CI, hooks, Make targets, docs, and native checks.
-3. Compare all manifest-managed and retired paths. Treat unlisted target paths as project-owned.
+3. Run `harnessctl scaffold audit` and use its JSON to compare all managed, retired, symlink, lock, and overlay paths. Treat unlisted target paths as project-owned.
 4. Trace live references with `rg` and inspect Git history as evidence. Evaluate the call graph after proposed wrapper changes.
 5. Classify each candidate as exact baseline, semantic merge, preserve, relocate, retire, or blocked.
-6. Edit the target directly. Copy exact baseline files only where ownership is clear; semantically merge policy and overlays.
-7. Re-run comparison, native tests, configuration contracts, and proportional Harness release gates.
-8. Report the template commit, additions, updates, deletions, preserved extensions, evidence, and unresolved blockers.
+6. Edit the target directly. Copy exact baseline files only where ownership is clear; semantically merge policy and overlays. Expensive native checks remain independent, path-conditional gates rather than hidden inside one wrapper.
+7. Render `harness/scaffold.lock` with `harnessctl scaffold record`, supplying explicit decisions for changed semantic paths, then rerun scaffold audit to convergence.
+8. On a clean final candidate, run native tests, configuration contracts, and proportional Harness gates. Audit convergence does not itself prove a clean worktree. Report the template commit, changes, preserved extensions, evidence, latency, and blockers.
 
-Git and the target worktree provide review and rollback. The plugin does not introduce `plan`, `apply`, transaction, state-lock, or automatic reference-closure machinery.
+Git and the target worktree provide review and rollback. `harness/scaffold.lock` is a content-addressed convergence record, not an execution state lock. The plugin does not introduce `plan`, `apply`, transactions, or automatic semantic merges.
 
 ## Principle injection
 

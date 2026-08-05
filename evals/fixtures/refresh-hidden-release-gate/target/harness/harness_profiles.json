@@ -1,0 +1,9 @@
+{
+  "schema_version": 2,
+  "custom_gates": {
+    "harness_self_tests": {"run": "harness/gates/release_self_tests.sh"}
+  },
+  "gate_sets": {
+    "release": ["change_scope", "release_context_before", "ai_boundaries", "harness_self_tests", "release_context_after"]
+  }
+}

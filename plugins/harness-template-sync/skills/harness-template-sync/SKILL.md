@@ -1,26 +1,28 @@
 ---
 name: harness-template-sync
-description: Use when a blank, mature, or Harness-enabled repository needs bootstrap, adoption, refresh, slimming, or ongoing entropy reduction against ai-first-go-template.
+description: Use when a repository needs Harness bootstrap, adoption, refresh, or entropy reduction against ai-first-go-template.
 ---
 
 # Harness Template Sync
 
-Use this Skill as a router for semantic repository work, never as a migration engine.
+Use this Skill for semantics; `harnessctl` handles mechanical convergence.
 
 ## Authority
 
 - Reference template: `git@github.com:moss-site/ai-first-go-template.git`.
-- Target instructions, artifacts, Git history, custom gates, and native checks own project facts.
-- The selected template `BLUEPRINT.md` and `harness/scaffold_manifest.json` own the shared baseline.
-- Inject and restore the repository constitution: thin prompts, thick artifacts and context, thin skills.
+- Target instructions, gates, and checks own project facts.
+- Template `BLUEPRINT.md` and `harness/scaffold_manifest.json` own the shared baseline.
+- `harnessctl scaffold audit|record` owns comparison and records; the Agent owns merges.
+- Restore thin prompts, thick artifacts and context, thin skills.
 
 ## Workflow
 
 1. Classify `bootstrap`, `adopt`, `refresh`, or `govern`; route `govern` through `HARNESS-MAINTENANCE`.
 2. Pin a clean template checkout; read both repositories before editing.
-3. Compare with `git`, `rg`, and file diffs. Unknown target content is project-owned by default.
-4. Relocate valid facts into canonical artifacts before slimming prompts, skills, scripts, or duplicate artifacts.
-5. Preserve custom gates and native checks; edit only after ownership and live callers are understood.
-6. Run target-native checks and proportional Harness verification. Report changes, preserved extensions, evidence, and blockers.
+3. Run `harnessctl scaffold audit` first; its JSON inventories drift, while unknown target content stays project-owned.
+4. Trace callers with `rg` and history. Relocate valid facts before slimming prompts, skills, scripts, or artifacts.
+5. Keep gates independently visible; split composite wrappers only after tracing callers.
+6. Resolve each semantic path, render `harness/scaffold.lock` with `harnessctl scaffold record`, save its exact JSON, then rerun audit to convergence.
+7. On a clean candidate, run native checks and proportional Harness verification. Report decisions, extensions, evidence, latency, and blockers.
 
 Stop on ambiguous ownership, conflicting authority, unrelated dirty changes, required approval, or failed gates.

@@ -4,6 +4,7 @@
     {"id": "bootstrap-blank", "mode": "bootstrap"},
     {"id": "adopt-mature", "mode": "adopt"},
     {"id": "refresh-custom-gates", "mode": "refresh"},
+    {"id": "refresh-hidden-release-gate", "mode": "refresh"},
     {"id": "govern-net-negative", "mode": "govern"},
     {"id": "ambiguous-ownership-stop", "mode": "refresh"},
     {"id": "dirty-target-stop", "mode": "adopt"}

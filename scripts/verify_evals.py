@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -11,12 +12,24 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EVALS = ROOT / "evals"
-ACTIONS = {"preserve", "add", "merge", "relocate", "retire", "blocked"}
+ACTIONS = {"preserve", "add", "merge", "relocate", "retire", "regenerate", "blocked"}
 MODES = {"bootstrap", "adopt", "refresh", "govern"}
+SKILL_FILES = (
+    Path("plugins/harness-template-sync/skills/harness-template-sync/SKILL.md"),
+    Path("plugins/harness-template-sync/skills/harness-template-sync/agents/openai.yaml"),
+)
 
 
 def load(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def skill_package_sha256(root: Path = ROOT) -> str:
+    digest = hashlib.sha256()
+    for relative in SKILL_FILES:
+        digest.update(relative.as_posix().encode("utf-8") + b"\0")
+        digest.update((root / relative).read_bytes() + b"\0")
+    return digest.hexdigest()
 
 
 def target_paths(case_id: str) -> set[str]:
@@ -64,6 +77,9 @@ def validate_fixture(case: dict, errors: list[str]) -> dict:
         for path, actions in forbidden.items()
     ):
         errors.append(f"{case_id}: forbidden_actions is invalid")
+    phrases = expected.get("required_evidence", [])
+    if not isinstance(phrases, list) or any(not isinstance(item, str) or not item for item in phrases):
+        errors.append(f"{case_id}: required_evidence is invalid")
     missing_ownership = target_paths(case_id) - set(required)
     if missing_ownership:
         errors.append(
@@ -76,9 +92,14 @@ def validate_fixture(case: dict, errors: list[str]) -> dict:
 def validate_results(
     cases: list[dict], expected_by_id: dict[str, dict], payload: object, errors: list[str]
 ) -> None:
-    if not isinstance(payload, dict) or set(payload) != {"results"}:
-        errors.append("result payload must contain only results")
+    expected_fields = {"schema_version", "skill_package_sha256", "results"}
+    if not isinstance(payload, dict) or set(payload) != expected_fields:
+        errors.append("result payload has an invalid contract")
         return
+    if payload.get("schema_version") != 1:
+        errors.append("result payload has an invalid schema version")
+    if payload.get("skill_package_sha256") != skill_package_sha256():
+        errors.append("result payload has a stale skill package digest")
     results = payload.get("results")
     if not isinstance(results, list):
         errors.append("results must be an array")
@@ -146,12 +167,25 @@ def validate_results(
         for gate in expected.get("required_gates", []):
             if gate not in gates:
                 errors.append(f"{case_id}: missing target gate {gate!r}")
+        for gate in expected.get("forbidden_gates", []):
+            if gate in gates:
+                errors.append(f"{case_id}: forbidden target gate {gate!r}")
         if "max_prompt_skill_line_delta" in expected:
             delta = result.get("prompt_skill_line_delta")
             if not isinstance(delta, int) or delta > expected["max_prompt_skill_line_delta"]:
                 errors.append(f"{case_id}: prompt/Skill line budget exceeded")
-        if not isinstance(result.get("evidence"), list) or not result["evidence"]:
+        evidence = result.get("evidence")
+        if (
+            not isinstance(evidence, list)
+            or not evidence
+            or any(not isinstance(item, str) for item in evidence)
+        ):
             errors.append(f"{case_id}: evidence must be non-empty")
+            evidence = []
+        evidence_text = " ".join(evidence).lower()
+        for phrase in expected.get("required_evidence", []):
+            if phrase.lower() not in evidence_text:
+                errors.append(f"{case_id}: evidence is missing {phrase!r}")
 
 
 def main() -> int:
@@ -180,7 +214,12 @@ def main() -> int:
     if not isinstance(schema, dict) or schema.get("type") != "object":
         errors.append("result schema is invalid")
     if args.results:
-        validate_results(cases, expected_by_id, load(args.results), errors)
+        try:
+            results = load(args.results)
+        except (OSError, json.JSONDecodeError) as error:
+            errors.append(f"cannot load eval results: {error}")
+            results = {}
+        validate_results(cases, expected_by_id, results, errors)
     for error in sorted(set(errors)):
         print(f"FAIL: {error}", file=sys.stderr)
     if errors:

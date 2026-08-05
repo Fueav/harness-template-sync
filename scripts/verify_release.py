@@ -20,6 +20,7 @@ EXPECTED_COMPATIBILITY = {
     "schema_version": 1,
     "template_contracts": {
         "scaffold_manifest": [1],
+        "harness_profiles": [1, 2, 3],
         "workflow_registry": [2, 3],
     },
 }
@@ -196,6 +197,8 @@ def main() -> int:
     require(len(skill_text.split()) <= 200, "SKILL.md must be at most 200 words", errors)
     for token in ("bootstrap", "adopt", "refresh", "govern", "HARNESS-MAINTENANCE"):
         require(token in skill_text, f"SKILL.md must include {token}", errors)
+    for token in ("harnessctl scaffold audit", "harnessctl scaffold record", "independently visible"):
+        require(token in skill_text, f"SKILL.md must include {token}", errors)
     for principle in ("thin prompts", "thick artifacts", "thin skills"):
         require(principle in skill_text.lower(), f"SKILL.md must include {principle}", errors)
 
@@ -232,7 +235,7 @@ def main() -> int:
             print(f"FAIL: {error}")
         return 1
     eval_contract = subprocess.run(
-        [sys.executable, "scripts/verify_evals.py"],
+        [sys.executable, "scripts/verify_evals.py", "--results", "evals/results.json"],
         cwd=ROOT,
         capture_output=True,
         text=True,
