@@ -1,9 +1,0 @@
-{
-  "case_id": "govern-net-negative",
-  "mode": "govern",
-  "decision": "continue",
-  "required_actions": {"AGENTS.md": "merge", "docs/project-context.md": "add", "harness/scaffold.lock": "add", ".agents/skills/local/SKILL.md": "retire"},
-  "required_gates": ["HARNESS-MAINTENANCE", "harnessctl scaffold record", "harnessctl scaffold audit", "verify-change"],
-  "required_evidence": ["converged scaffold audit", "net-zero prompt and Skill delta"],
-  "max_prompt_skill_line_delta": 0
-}

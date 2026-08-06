@@ -1,8 +1,9 @@
 {
   "case_id": "ambiguous-ownership-stop",
-  "mode": "refresh",
+  "mode": "upgrade",
   "decision": "blocked",
   "required_actions": {"scripts/unknown_policy.sh": "blocked"},
   "forbidden_actions": {"scripts/unknown_policy.sh": ["retire", "merge"]},
-  "required_blockers": ["ambiguous ownership"]
+  "required_blockers": ["ambiguous ownership"],
+  "required_evidence": ["preflight stopped before target edits"]
 }

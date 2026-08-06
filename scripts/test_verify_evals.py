@@ -79,10 +79,17 @@ class EvalContractTests(unittest.TestCase):
             result = self.run_validator(checkout, "--results", str(result_path))
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_exposes_only_delivery_intents(self) -> None:
+        modes = {
+            case["mode"]
+            for case in json.loads((ROOT / "evals/cases.json").read_text())["cases"]
+        }
+        self.assertEqual(modes, {"bootstrap", "upgrade"})
+
     def test_rejects_unknown_target_without_ownership_decision(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             checkout = self.copy_checkout(temp_dir)
-            path = checkout / "evals/fixtures/adopt-mature/target/unknown.txt"
+            path = checkout / "evals/fixtures/bootstrap-mature/target/unknown.txt"
             path.write_text("unknown\n")
             result = self.run_validator(checkout)
             output = result.stdout + result.stderr
@@ -94,7 +101,7 @@ class EvalContractTests(unittest.TestCase):
             checkout = self.copy_checkout(temp_dir)
             payload = self.valid_results(checkout)
             target = next(
-                item for item in payload["results"] if item["case_id"] == "refresh-custom-gates"
+                item for item in payload["results"] if item["case_id"] == "upgrade-custom-gates"
             )
             next(
                 item for item in target["path_decisions"]

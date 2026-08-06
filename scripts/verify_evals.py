@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 EVALS = ROOT / "evals"
 ACTIONS = {"preserve", "add", "merge", "relocate", "retire", "regenerate", "blocked"}
-MODES = {"bootstrap", "adopt", "refresh", "govern"}
+MODES = {"bootstrap", "upgrade"}
 SKILL_FILES = (
     Path("plugins/harness-template-sync/skills/harness-template-sync/SKILL.md"),
     Path("plugins/harness-template-sync/skills/harness-template-sync/agents/openai.yaml"),

@@ -13,7 +13,7 @@
         "required": ["case_id", "mode", "decision", "path_decisions", "blockers", "target_gates", "evidence"],
         "properties": {
           "case_id": {"type": "string"},
-          "mode": {"enum": ["bootstrap", "adopt", "refresh", "govern"]},
+          "mode": {"enum": ["bootstrap", "upgrade"]},
           "decision": {"enum": ["continue", "blocked"]},
           "path_decisions": {
             "type": "array",

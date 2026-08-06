@@ -1,7 +1,8 @@
 {
   "case_id": "dirty-target-stop",
-  "mode": "adopt",
+  "mode": "bootstrap",
   "decision": "blocked",
   "required_actions": {".dirty-change": "blocked"},
-  "required_blockers": ["unrelated dirty changes"]
+  "required_blockers": ["unrelated dirty changes"],
+  "required_evidence": ["preflight stopped before target edits"]
 }

@@ -1,4 +1,4 @@
 interface:
   display_name: "Harness Template Sync"
-  short_description: "Migrate and govern Harness context"
-  default_prompt: "Use $harness-template-sync to bootstrap, adopt, refresh, or govern Harness."
+  short_description: "One-shot scaffold delivery"
+  default_prompt: "Use $harness-template-sync only from the exact canonical ai-first-go-template root to cold-start or explicitly upgrade one target, prove readiness, then exit."

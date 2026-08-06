@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "fueav-harness-sync",
-  "description": "Independent Harness migration and lifecycle-governance skills.",
+  "description": "Independent one-shot Harness scaffold delivery Skill.",
   "owner": {
     "name": "Fueav"
   },
@@ -9,8 +9,8 @@
     {
       "name": "harness-template-sync",
       "source": "./plugins/harness-template-sync",
-      "description": "Migrates and governs Harness architecture while preserving project-owned context and extensions.",
-      "version": "2.1.0",
+      "description": "Cold-starts or explicitly upgrades one target from the canonical Scaffold Source, then exits.",
+      "version": "3.0.0",
       "author": {
         "name": "Fueav"
       },
@@ -18,8 +18,8 @@
       "category": "development",
       "tags": [
         "harness",
-        "migration",
-        "governance"
+        "scaffold-delivery",
+        "template-upgrade"
       ],
       "strict": false
     }

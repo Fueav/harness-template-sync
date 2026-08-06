@@ -13,15 +13,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 NAME = "harness-template-sync"
 MARKETPLACE_NAME = "fueav-harness-sync"
+UMBRELLA_NAME = "fueav-harness"
 PLUGIN = ROOT / "plugins" / NAME
 SKILL = PLUGIN / "skills" / NAME
-COMPATIBILITY = ROOT / "contracts" / "template-compatibility.json"
+COMPATIBILITY = ROOT / "contracts" / "suite-compatibility.json"
 EXPECTED_COMPATIBILITY = {
     "schema_version": 1,
+    "suite_contract_versions": [1],
     "template_contracts": {
         "scaffold_manifest": [1],
-        "harness_profiles": [1, 2, 3],
-        "workflow_registry": [2, 3],
+        "harness_profiles": [3],
+        "workflow_registry": [3],
     },
 }
 
@@ -109,20 +111,21 @@ def main() -> int:
             if line.strip().startswith("codex plugin marketplace add ")
         ]
         require(
-            codex_add_commands == [f"codex plugin marketplace add Fueav/{NAME}"],
+            codex_add_commands == ["codex plugin marketplace add Fueav/harness-plugins"],
             "Codex default install must use one unpinned marketplace command",
             errors,
         )
     else:
         errors.append("README must document Codex installation")
     for command in (
-        f"codex plugin marketplace add Fueav/{NAME}",
-        f"codex plugin marketplace upgrade {MARKETPLACE_NAME}",
+        "codex plugin marketplace add Fueav/harness-plugins",
+        f"codex plugin marketplace upgrade {UMBRELLA_NAME}",
         f"codex plugin marketplace remove {NAME}",
-        f"codex plugin add {NAME}@{MARKETPLACE_NAME}",
+        f"codex plugin add {NAME}@{UMBRELLA_NAME}",
+        f"codex plugin add harness-driven-development@{UMBRELLA_NAME}",
         f"claude plugin marketplace remove {NAME} --scope user",
-        f"claude plugin marketplace add Fueav/{NAME} --scope user",
-        f"claude plugin update {NAME}@{MARKETPLACE_NAME}",
+        "claude plugin marketplace add Fueav/harness-plugins --scope user",
+        f"claude plugin update {NAME}@{UMBRELLA_NAME}",
     ):
         require(command in readme_text, f"README must document: {command}", errors)
 
@@ -195,12 +198,18 @@ def main() -> int:
     )
     require(len(skill_text.splitlines()) <= 30, "SKILL.md must be at most 30 lines", errors)
     require(len(skill_text.split()) <= 200, "SKILL.md must be at most 200 words", errors)
-    for token in ("bootstrap", "adopt", "refresh", "govern", "HARNESS-MAINTENANCE"):
-        require(token in skill_text, f"SKILL.md must include {token}", errors)
-    for token in ("harnessctl scaffold audit", "harnessctl scaffold record", "independently visible"):
-        require(token in skill_text, f"SKILL.md must include {token}", errors)
-    for principle in ("thin prompts", "thick artifacts", "thin skills"):
-        require(principle in skill_text.lower(), f"SKILL.md must include {principle}", errors)
+    for token in (
+        "exact clean canonical Scaffold Source Git root",
+        "`harness/template_delivery.py preflight`",
+        "`harness/template_delivery.py record`",
+        "`harness/template_delivery.py complete`",
+        "native checks",
+        "then exit",
+        "Never invoke or install Harness Driven Development",
+    ):
+        require(token in skill_text, f"SKILL.md is missing delivery contract: {token}", errors)
+    legacy = sorted(set(re.findall(r"\b(?:adopt|refresh|govern)\b|HARNESS-MAINTENANCE", skill_text, re.IGNORECASE)))
+    require(not legacy, f"SKILL.md contains a legacy lifecycle mode: {', '.join(legacy)}", errors)
 
     openai_path = SKILL / "agents" / "openai.yaml"
     openai_text = (
@@ -209,14 +218,15 @@ def main() -> int:
         else ""
     )
     require("$harness-template-sync" in openai_text, "OpenAI default prompt must invoke the Skill", errors)
-    require("bootstrap, adopt, refresh, or govern" in openai_text, "OpenAI default prompt must expose all modes", errors)
+    require("exact canonical ai-first-go-template root" in openai_text, "OpenAI default prompt must enforce the source root", errors)
+    require("cold-start or explicitly upgrade" in openai_text and "then exit" in openai_text, "OpenAI default prompt must expose one-shot delivery", errors)
 
     require((ROOT / "docs" / "CONTRACT.md").is_file(), "missing docs/CONTRACT.md authority", errors)
     try:
         compatibility = load_json(COMPATIBILITY)
         require(
             compatibility == EXPECTED_COMPATIBILITY,
-            "template compatibility manifest has an invalid contract",
+            "suite compatibility manifest has an invalid contract",
             errors,
         )
     except ValueError as exc:

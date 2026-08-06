@@ -1,28 +1,21 @@
 ---
 name: harness-template-sync
-description: Use when a repository needs Harness bootstrap, adoption, refresh, or entropy reduction against ai-first-go-template.
+description: Use only from the exact canonical ai-first-go-template root to cold-start or explicitly upgrade one target repository.
 ---
 
 # Harness Template Sync
 
-Use this Skill for semantics; `harnessctl` handles mechanical convergence.
-
-## Authority
-
-- Reference template: `git@github.com:moss-site/ai-first-go-template.git`.
-- Target instructions, gates, and checks own project facts.
-- Template `BLUEPRINT.md` and `harness/scaffold_manifest.json` own the shared baseline.
-- `harnessctl scaffold audit|record` owns comparison and records; the Agent owns merges.
-- Restore thin prompts, thick artifacts and context, thin skills.
+Perform one Template Delivery, prove the handoff, then exit. Never use this Skill for normal target work or target Harness maintenance.
 
 ## Workflow
 
-1. Classify `bootstrap`, `adopt`, `refresh`, or `govern`; route `govern` through `HARNESS-MAINTENANCE`.
-2. Pin a clean template checkout; read both repositories before editing.
-3. Run `harnessctl scaffold audit` first; its JSON inventories drift, while unknown target content stays project-owned.
-4. Trace callers with `rg` and history. Relocate valid facts before slimming prompts, skills, scripts, or artifacts.
-5. Keep gates independently visible; split composite wrappers only after tracing callers.
-6. Resolve each semantic path, render `harness/scaffold.lock` with `harnessctl scaffold record`, save its exact JSON, then rerun audit to convergence.
-7. On a clean candidate, run native checks and proportional Harness verification. Report decisions, extensions, evidence, latency, and blockers.
+1. Require the current directory to be the exact clean canonical Scaffold Source Git root. Require one clean Target Repository by absolute path.
+2. Choose `bootstrap` only when the target lacks `harness/scaffold.lock`; otherwise choose explicit `upgrade`. Run `harness/template_delivery.py preflight` before edits.
+3. Read both repositories and the target's instructions, native checks, gates, CI, hooks, and relevant history. Unknown content stays target-owned.
+4. Use the audit from preflight. Trace callers with `rg`; semantically merge managed paths without weakening independently visible gates.
+5. Run `harness/template_delivery.py record` with explicit path resolutions. Commit the target, then run its native checks and proportional Harness verification.
+6. Run `harness/template_delivery.py complete`; report exact revisions, preserved extensions, evidence, and blockers, then exit.
 
-Stop on ambiguous ownership, conflicting authority, unrelated dirty changes, required approval, or failed gates.
+Never invoke or install Harness Driven Development. It independently owns later target work after readiness.
+
+Stop on a wrong source root, dirty repository, ambiguous ownership, conflicting authority, required approval, protected semantics, or a failed gate.

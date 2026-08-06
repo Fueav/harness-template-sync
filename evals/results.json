@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "skill_package_sha256": "72f8a96573780afa32972bf5f83921f149092d8fc45913b9f39b19f0ffcd83df",
+  "skill_package_sha256": "3d9af7cf8e109dbdd6a7a2fc3bd4302b835d4282fa6b4a87863fad6248467bb0",
   "results": [
     {
       "case_id": "bootstrap-blank",
@@ -10,44 +10,42 @@
         {"path": "README.md", "action": "preserve"},
         {"path": "AGENTS.md", "action": "add"},
         {"path": "BLUEPRINT.md", "action": "add"},
-        {"path": "harness/harness.lock", "action": "add"},
         {"path": "harness/scaffold.lock", "action": "add"}
       ],
       "blockers": [],
-      "target_gates": ["harnessctl scaffold record", "harnessctl scaffold audit", "verify-change"],
-      "evidence": ["converged scaffold audit for the pinned template"]
+      "target_gates": ["template_delivery.py preflight", "template_delivery.py record", "target native checks", "template_delivery.py complete"],
+      "evidence": ["clean canonical Scaffold Source", "converged target readiness"]
     },
     {
-      "case_id": "adopt-mature",
-      "mode": "adopt",
+      "case_id": "bootstrap-mature",
+      "mode": "bootstrap",
       "decision": "continue",
       "path_decisions": [
         {"path": "AGENTS.md", "action": "merge"},
-        {"path": "docs/project-contract.md", "action": "add"},
         {"path": "harness/scaffold.lock", "action": "add"},
         {"path": "scripts/native_check.sh", "action": "preserve"}
       ],
       "blockers": [],
-      "target_gates": ["harnessctl scaffold record", "harnessctl scaffold audit", "scripts/native_check.sh", "verify-change"],
-      "evidence": ["converged scaffold audit", "preserved native check and project facts"]
+      "target_gates": ["template_delivery.py preflight", "template_delivery.py record", "scripts/native_check.sh", "template_delivery.py complete"],
+      "evidence": ["preserved target-owned facts", "converged target readiness"]
     },
     {
-      "case_id": "refresh-custom-gates",
-      "mode": "refresh",
+      "case_id": "upgrade-custom-gates",
+      "mode": "upgrade",
       "decision": "continue",
       "path_decisions": [
         {"path": "harness/harness_profiles.json", "action": "merge"},
-        {"path": "harness/scaffold.lock", "action": "add"},
+        {"path": "harness/scaffold.lock", "action": "regenerate"},
         {"path": "scripts/gates/custom_check.sh", "action": "preserve"},
         {"path": "docs/harness-workflows.md", "action": "merge"}
       ],
       "blockers": [],
-      "target_gates": ["harnessctl scaffold record", "harnessctl scaffold audit", "scripts/gates/custom_check.sh", "verify-release"],
-      "evidence": ["converged scaffold audit", "preserved custom gate and native ownership"]
+      "target_gates": ["template_delivery.py preflight", "template_delivery.py record", "scripts/gates/custom_check.sh", "template_delivery.py complete"],
+      "evidence": ["preserved custom gate", "converged target readiness"]
     },
     {
-      "case_id": "refresh-hidden-release-gate",
-      "mode": "refresh",
+      "case_id": "upgrade-hidden-release-gate",
+      "mode": "upgrade",
       "decision": "continue",
       "path_decisions": [
         {"path": "AGENTS.md", "action": "merge"},
@@ -58,45 +56,35 @@
         {"path": "scripts/production_release_gate.sh", "action": "preserve"}
       ],
       "blockers": [],
-      "target_gates": ["harnessctl scaffold record", "harnessctl scaffold audit", "scripts/production_release_gate.sh", "verify-release"],
-      "evidence": ["independent production gate replaces the hidden composite wrapper", "no remaining wrapper callers", "executable production gate", "converged scaffold audit on the clean final candidate"]
-    },
-    {
-      "case_id": "govern-net-negative",
-      "mode": "govern",
-      "decision": "continue",
-      "path_decisions": [
-        {"path": "AGENTS.md", "action": "merge"},
-        {"path": "docs/project-context.md", "action": "add"},
-        {"path": "harness/scaffold.lock", "action": "add"},
-        {"path": ".agents/skills/local/SKILL.md", "action": "retire"}
-      ],
-      "blockers": [],
-      "target_gates": ["HARNESS-MAINTENANCE", "harnessctl scaffold record", "harnessctl scaffold audit", "verify-change"],
-      "evidence": ["converged scaffold audit", "net-zero prompt and Skill delta"],
-      "prompt_skill_line_delta": -8
+      "target_gates": ["template_delivery.py preflight", "template_delivery.py record", "scripts/production_release_gate.sh", "template_delivery.py complete"],
+      "evidence": ["independent production gate", "no remaining wrapper callers", "executable production gate on a clean converged target"]
     },
     {
       "case_id": "ambiguous-ownership-stop",
-      "mode": "refresh",
+      "mode": "upgrade",
       "decision": "blocked",
-      "path_decisions": [
-        {"path": "scripts/unknown_policy.sh", "action": "blocked"}
-      ],
-      "blockers": ["ambiguous ownership of the live policy script"],
+      "path_decisions": [{"path": "scripts/unknown_policy.sh", "action": "blocked"}],
+      "blockers": ["ambiguous ownership"],
       "target_gates": [],
-      "evidence": ["reference tracing cannot establish an owner"]
+      "evidence": ["preflight stopped before target edits"]
     },
     {
       "case_id": "dirty-target-stop",
-      "mode": "adopt",
+      "mode": "bootstrap",
       "decision": "blocked",
-      "path_decisions": [
-        {"path": ".dirty-change", "action": "blocked"}
-      ],
-      "blockers": ["unrelated dirty changes prevent isolated adoption"],
+      "path_decisions": [{"path": ".dirty-change", "action": "blocked"}],
+      "blockers": ["unrelated dirty changes"],
       "target_gates": [],
-      "evidence": ["Git status shows unrelated work"]
+      "evidence": ["preflight stopped before target edits"]
+    },
+    {
+      "case_id": "wrong-source-stop",
+      "mode": "upgrade",
+      "decision": "blocked",
+      "path_decisions": [{"path": "README.md", "action": "blocked"}],
+      "blockers": ["not the exact canonical Scaffold Source root"],
+      "target_gates": [],
+      "evidence": ["source identity failed before target edits"]
     }
   ]
 }

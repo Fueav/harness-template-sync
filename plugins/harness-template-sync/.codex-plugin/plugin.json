@@ -1,7 +1,7 @@
 {
   "name": "harness-template-sync",
-  "version": "2.1.0",
-  "description": "Routes Harness template sync requests to the packaged Skill.",
+  "version": "3.0.0",
+  "description": "Routes one canonical-source scaffold delivery to the packaged Skill.",
   "author": {
     "name": "Fueav",
     "url": "https://github.com/Fueav"
@@ -10,15 +10,15 @@
   "repository": "https://github.com/Fueav/harness-template-sync",
   "keywords": [
     "harness",
-    "migration",
-    "governance",
+    "scaffold-delivery",
+    "template-upgrade",
     "repository-workflow"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Harness Template Sync",
-    "shortDescription": "Migrate and govern Harness context",
-    "longDescription": "Use for Harness template bootstrap, adoption, refresh, or governance.",
+    "shortDescription": "One-shot scaffold delivery",
+    "longDescription": "Use only from the canonical Scaffold Source for one cold start or explicit target upgrade.",
     "developerName": "Fueav",
     "category": "Developer Tools",
     "capabilities": [
@@ -26,6 +26,6 @@
       "Read",
       "Write"
     ],
-    "defaultPrompt": "Use $harness-template-sync to bootstrap, adopt, refresh, or govern Harness."
+    "defaultPrompt": "Use $harness-template-sync from the exact canonical ai-first-go-template root for one target delivery, then exit."
   }
 }

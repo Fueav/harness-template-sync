@@ -1,130 +1,46 @@
 # Harness Template Sync Contract
 
-Status: v2.1 release contract
+Status: v3.0 release contract
 
 ## Decision
 
-Harness Template Sync is an independent Agent lifecycle plugin, not a generic migration program. The Agent reads a pinned `ai-first-go-template` checkout and the real target repository, reasons about project semantics, edits the target, and proves the result with deterministic scaffold audit plus target-native gates.
+Harness Template Sync is the semantic adapter for one Template Delivery. It is invoked only while the Agent's current directory is the exact clean canonical `ai-first-go-template` Git root, cold-starts or explicitly upgrades one clean Target Repository named by absolute path, proves the handoff, and exits.
 
-It is a packaging and release peer of `harness-driven-development`, but the two have a directional repository-contract handoff. They do not contain, install, or call each other. This plugin produces and maintains the Harness-enabled repository contract that `harness-driven-development` can later consume during ordinary product work. `harnessctl` performs read-only scaffold comparison and renders convergence records; it never chooses semantic merges, deletes content, or applies a migration.
+Normal target work is outside this plugin. After delivery, product changes, incidents, releases, deployments, refactors, and target Harness maintenance use Harness Driven Development alone. The plugins are independent release peers: neither contains, installs, invokes, or coordinates the other at runtime.
 
-## Integration boundary
+## Interfaces
 
-`ai-first-go-template` owns the shared Harness baseline. Harness Template Sync consumes that baseline plus target-owned context and turns the target into, or keeps it as, a valid Harness-enabled repository. The resulting repository owns its instructions, workflow declarations, specifications, profiles, gates, and project extensions. Harness Driven Development may then route product work through those declarations without knowing how they arrived.
-
-This is contract compatibility, not package dependency or lockstep versioning:
-
-- Supported Template contract versions are defined once in `contracts/template-compatibility.json` and enforced by release validation.
-- A template content release does not require a Sync release unless the manifest schema, migration semantics, or safety contract changes.
-- A Harness Driven Development release does not require a Sync release unless the repository contract it consumes changes.
-- `govern` follows the target repository's declared `HARNESS-MAINTENANCE` workflow directly; it does not invoke the Harness Driven Development Skill.
-- If one request combines Harness migration with product behavior work, complete and verify the migration phase first, then route the product phase through Harness Driven Development.
-
-## Architecture constitution
-
-- Thin prompts select workflows and point to authority.
-- Thick artifacts and context own unique project facts, decisions, contracts, and evidence.
-- Thin skills route the Agent through those facts and define stop conditions.
-- Mechanical facts stay in manifests, scripts, or tests; semantic ownership remains with the Agent and repository context.
-- Prompt and Skill maintenance is net-zero or net-negative. Valid facts are relocated before duplicate routing text is removed.
-
-Migration injects this constitution into both blank and established projects. Governance restores it when normal development introduces drift, duplicate authority, or vendored execution logic.
-
-## Sources of truth
-
-| Authority | Owns | Does not own |
+| Interface | Owner | Contract |
 | --- | --- | --- |
-| Target repository | Product contracts, custom gates, native checks, local extensions, Git history | Shared template baseline |
-| Template `BLUEPRINT.md` | Human-readable Harness architecture and completion contract | Target-specific policy |
-| Template `harness/scaffold_manifest.json` | Managed paths, retired paths, merge strategies | Semantic deletion decisions |
-| This Skill | Trigger, authority pointers, compact workflow, stop conditions | Migration code, template inventory, project exceptions |
-| Agent | Comparison, reference tracing, semantic merge, scoped edits, evidence synthesis | Inventing undocumented project policy |
-| `harnessctl` | Pinned execution, scaffold audit and record rendering, evidence verification | Semantic merge decisions or migration application |
+| `harness/suite_contract.json` | Scaffold Source | Versioned repository handoff and canonical source identity |
+| `harness/template_delivery.py preflight` | Scaffold Source | Rejects the wrong root, dirty source/target, relative target, and mismatched intent before edits |
+| `harness/template_delivery.py record` | Scaffold Source | Materializes the content-addressed target scaffold record after semantic decisions |
+| `harness/template_delivery.py complete` | Scaffold Source | Requires clean convergence and target `repository_verification.py ready`, then ends delivery |
+| `harnessctl scaffold audit|record` | Pinned engine | Deterministic comparison and record rendering; never semantic edits |
+| Target-native checks | Target Repository | Product, project, deployment, and extension safety |
 
-Unknown target content is project-owned by default. A path used by a custom gate or live caller stays project-owned until that caller is deliberately migrated. A historical byte match can show origin but is never sufficient authority to delete.
+The Skill routes through these interfaces and never bundles their code or inventories. Supported suite and template contract versions are declared once in `contracts/suite-compatibility.json`.
 
-## Lifecycle modes
+## Delivery flow
 
-### Bootstrap
+1. Verify the exact canonical Scaffold Source root and choose `bootstrap` for a target without a scaffold record or `upgrade` for a target with one.
+2. Run preflight before mutation. Read both repositories, nearest instructions, native checks, custom gates, CI, hooks, and relevant Git history.
+3. Treat the target as a divergent overlay. Unknown content is target-owned; trace callers before changing wrappers or gates.
+4. Resolve every managed path as exact baseline, semantic merge, preserve, relocate, retire, or blocked. Never infer deletion from a name or historical byte match.
+5. Record the resolved scaffold state, commit a clean candidate, run target-native checks and its proportional Harness profile, then run complete.
+6. Report exact source and target commits, preserved extensions, checks, and blockers; exit. Do not continue into the target's requested daily work in the same Skill phase.
 
-For a blank repository, install only the minimum baseline: a thin root prompt, Blueprint/context map, boundaries, Harness configuration, pinned execution wrappers, and required symlinks. Do not create speculative product artifacts, placeholder specifications, or placeholder Skills.
+Git supplies review and rollback. The scaffold lock is a convergence record, not plugin state, an execution transaction, or permission to overwrite target facts.
 
-### Adopt
+## Safety
 
-For a mature repository without Harness, audit its instructions, CI, docs, scripts, tests, hooks, and conventions before injection. Extract durable facts from long prompts into canonical project artifacts, then leave thin pointers. Preserve native checks rather than duplicating them.
+- Stop on ambiguous ownership, conflicting authority, unrelated dirty changes, required approval, failed gates, or protected business semantics.
+- Never weaken a target check, hide an expensive gate in a wrapper, or copy `harnessctl` engine source.
+- Never run from a fork, target, sibling checkout, subdirectory, or merely similar template. Canonical Git identity and exact root are mandatory.
+- Never add a migration CLI, bundled playbook, target inventory, project exception, background lifecycle, or plugin-to-plugin call.
 
-### Refresh
+## Distribution
 
-For an existing Harness repository, treat the target as a divergent overlay. Preserve custom gates, native checks, project artifacts, and workflow contracts. Remove superseded wrappers or duplicated execution code only after ownership and the post-change call graph are understood.
+This repository independently publishes one plugin and keeps its own semver, tags, GitHub releases, evals, and per-repository marketplaces. The recommended human onboarding uses the `fueav-harness` umbrella marketplace; that index does not change package independence.
 
-### Govern
-
-Route ongoing entropy reduction through the target's `HARNESS-MAINTENANCE` workflow. Compare the current Harness surface with the pinned template and the target's Harness-related Git history. Relocate unique facts before deleting duplicated prompts, Skills, scripts, stale pointers, or orphaned artifacts. Finish with no weakened gate and a net-zero or net-negative prompt-and-Skill delta.
-
-Governance is event-driven: use it after material template updates, when size budgets drift, when duplicate authority appears, or before a release whose Harness growth cannot be justified.
-
-## Trigger ownership
-
-| Request | Owning Skill |
-| --- | --- |
-| Bootstrap Harness into a blank repository | Harness Template Sync |
-| Adopt Harness in a mature non-Harness repository | Harness Template Sync |
-| Refresh or slim Harness prompts, Skills, wrappers, or gates | Harness Template Sync |
-| Reduce accumulated Harness entropy | Harness Template Sync |
-| Implement or change product behavior inside a Harness repository | Harness Driven Development |
-| Handle incidents, refactors, releases, or deployments under declared workflows | Harness Driven Development |
-
-## Semantic migration flow
-
-1. Select and pin the exact template commit or release; reject an unintentionally dirty source.
-2. Read the nearest target instructions and inspect its Git state, Harness assets, custom gates, CI, hooks, Make targets, docs, and native checks.
-3. Run `harnessctl scaffold audit` and use its JSON to compare all managed, retired, symlink, lock, and overlay paths. Treat unlisted target paths as project-owned.
-4. Trace live references with `rg` and inspect Git history as evidence. Evaluate the call graph after proposed wrapper changes.
-5. Classify each candidate as exact baseline, semantic merge, preserve, relocate, retire, or blocked.
-6. Edit the target directly. Copy exact baseline files only where ownership is clear; semantically merge policy and overlays. Expensive native checks remain independent, path-conditional gates rather than hidden inside one wrapper.
-7. Render `harness/scaffold.lock` with `harnessctl scaffold record`, supplying explicit decisions for changed semantic paths, then rerun scaffold audit to convergence.
-8. On a clean final candidate, run native tests, configuration contracts, and proportional Harness gates. Audit convergence does not itself prove a clean worktree. Report the template commit, changes, preserved extensions, evidence, latency, and blockers.
-
-Git and the target worktree provide review and rollback. `harness/scaffold.lock` is a content-addressed convergence record, not an execution state lock. The plugin does not introduce `plan`, `apply`, transactions, or automatic semantic merges.
-
-## Principle injection
-
-The constitution is injected through existing authority layers:
-
-1. The root prompt states the three principles once and points to `BLUEPRINT.md`.
-2. `BLUEPRINT.md` defines what each layer may contain and where project facts live.
-3. `harness/scaffold_manifest.json` makes the prompt, Blueprint, and relevant Skill entrypoints visible to comparison without duplicating prose.
-4. Existing Harness size and no-net-growth checks enforce the mechanical budget. Equivalent project-native checks remain authoritative.
-
-The slogan stays in the prompt; its explanation stays in the artifact. No new policy file is created in a target solely for this constitution.
-
-## Safety and stop conditions
-
-- Preserve unknown content and project extensions.
-- Relocate valid facts before slimming their old container.
-- Never name a specific product repository as a shared exception.
-- Stop on ambiguous ownership, conflicting authority, unrelated dirty changes, required human approval, or failed/unavailable mandatory gates.
-- Do not weaken target checks to make a migration pass.
-- Do not change protected business semantics under the label of Harness maintenance.
-
-## Distributed package
-
-The release has its own repository, semver, tag, GitHub release, Codex marketplace, and Claude Code marketplace. The marketplace identity is `fueav-harness-sync`, distinct from the `harness-template-sync` plugin identity so cache paths retain explicit marketplace and plugin segments. `VERSION`, both plugin manifests, and both marketplace entries must match. Its version is independent from template and Harness Driven Development versions.
-
-Normal Codex marketplace installs track the repository's default branch so `marketplace upgrade` can advance across releases. A release tag is an explicit immutable pin, not the default install path. Release validation rejects a pinned default install and requires documented Codex and Claude Code update flows.
-
-The distributed Skill contains exactly:
-
-- `SKILL.md`, at most 30 lines and 200 words.
-- `agents/openai.yaml`.
-
-It ships no executable migration scripts, playbook, fixtures, target inventory, state file, or CLI documentation. Release validation mechanically enforces this shape and client metadata.
-
-## Non-goals
-
-- One-command migration of arbitrary repositories.
-- Automatic semantic merges or deletion based only on names or hashes.
-- Encoding named-project exceptions in shared tooling.
-- Turning `harnessctl` into a migration controller.
-- Scheduling automatic deletion of project content.
-- Owning the `harness-driven-development` workflow.
+The distributed Skill contains only `SKILL.md` and `agents/openai.yaml`. Release validation binds checked-in behavioral results to the package digest and mechanically rejects the retired multi-mode lifecycle.

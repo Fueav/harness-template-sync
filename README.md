@@ -1,57 +1,71 @@
 # Harness Template Sync
 
-`harness-template-sync` is an independent Codex and Claude Code plugin for semantic Harness migration and lifecycle governance. It compares a versioned `ai-first-go-template` checkout with a real target repository, preserves project-owned facts and extensions, and routes the Agent through bootstrap, adoption, refresh, or entropy-reduction work.
+`harness-template-sync` performs one cold start or explicit upgrade from the exact canonical `ai-first-go-template` root to a named target, proves readiness, and exits. It is not used for daily target work or target Harness maintenance.
 
-The plugin is intentionally thin: its Skill contains no migration program, file inventory, or project-specific exceptions. It delegates deterministic comparison and convergence-record rendering to `harnessctl scaffold audit|record`; semantic merges remain Agent work. The full authority and safety contract lives in [`docs/CONTRACT.md`](docs/CONTRACT.md).
+The package is a thin semantic router. The Scaffold Source owns `template_delivery.py`, the suite contract, and deterministic `harnessctl` adapters; the target owns its product facts, extensions, and native checks. See [`docs/CONTRACT.md`](docs/CONTRACT.md).
 
 ## Install in Codex
 
-```bash
-codex plugin marketplace add Fueav/harness-template-sync
-codex plugin add harness-template-sync@fueav-harness-sync
-```
+Scaffold maintainers install both independent plugins from the umbrella marketplace:
 
-The default install intentionally omits `--ref`, so marketplace upgrades follow the repository's default branch. Use a release tag only for an intentionally immutable installation; a tagged marketplace remains pinned until it is rebound.
+```bash
+codex plugin marketplace add Fueav/harness-plugins
+codex plugin add harness-template-sync@fueav-harness
+codex plugin add harness-driven-development@fueav-harness
+```
 
 ## Install in Claude Code
 
 ```bash
-claude plugin marketplace add Fueav/harness-template-sync --scope user
-claude plugin install harness-template-sync@fueav-harness-sync --scope user
+claude plugin marketplace add Fueav/harness-plugins --scope user
+claude plugin install harness-template-sync@fueav-harness --scope user
+claude plugin install harness-driven-development@fueav-harness --scope user
 ```
 
-## Migrate from v1
+Restart the client or open a new session after installation.
 
-Version 2 separates the marketplace identity from the plugin identity. The marketplace cannot be renamed in place, so remove the v1 selector and add the repository again.
+## Use
 
-For Codex:
+Open the exact canonical Scaffold Source root, then use one natural-language request with an absolute target path:
 
-```bash
-codex plugin remove harness-template-sync@harness-template-sync
-codex plugin marketplace remove harness-template-sync
-codex plugin marketplace add Fueav/harness-template-sync
-codex plugin add harness-template-sync@fueav-harness-sync
+```text
+Use $harness-template-sync to upgrade /absolute/path/to/target and stop after delivery.
 ```
 
-For Claude Code:
-
-```bash
-claude plugin uninstall harness-template-sync@harness-template-sync --scope user
-claude plugin marketplace remove harness-template-sync --scope user
-claude plugin marketplace add Fueav/harness-template-sync --scope user
-claude plugin install harness-template-sync@fueav-harness-sync --scope user
-```
-
-Restart the client or open a new session after migration.
+Use “cold-start” instead of “upgrade” when the target has no `harness/scaffold.lock`. The Skill refuses forks, sibling checkouts, subdirectories, dirty repositories, relative targets, and intent/record mismatches. After completion, work in the target with Harness Driven Development only.
 
 ## Upgrade
 
 ```bash
-codex plugin marketplace upgrade fueav-harness-sync
-codex plugin add harness-template-sync@fueav-harness-sync
-claude plugin marketplace update fueav-harness-sync
-claude plugin update harness-template-sync@fueav-harness-sync
+codex plugin marketplace upgrade fueav-harness
+codex plugin add harness-template-sync@fueav-harness
+claude plugin marketplace update fueav-harness --scope user
+claude plugin update harness-template-sync@fueav-harness
 ```
+
+## Migrate from the v2 per-repository marketplace
+
+Codex:
+
+```bash
+codex plugin remove harness-template-sync@fueav-harness-sync
+codex plugin marketplace remove harness-template-sync
+codex plugin marketplace remove fueav-harness-sync
+codex plugin marketplace add Fueav/harness-plugins
+codex plugin add harness-template-sync@fueav-harness
+```
+
+Claude Code:
+
+```bash
+claude plugin uninstall harness-template-sync@fueav-harness-sync --scope user
+claude plugin marketplace remove harness-template-sync --scope user
+claude plugin marketplace remove fueav-harness-sync --scope user
+claude plugin marketplace add Fueav/harness-plugins --scope user
+claude plugin install harness-template-sync@fueav-harness --scope user
+```
+
+The per-repository `fueav-harness-sync` marketplace remains an independently published distribution coordinate, but the umbrella path is the supported default onboarding.
 
 ## Verify a source checkout
 
@@ -68,28 +82,8 @@ claude plugin validate plugins/harness-template-sync --strict
 claude plugin validate . --strict
 ```
 
-`CODEX_PYTHON` must point to a Python environment with PyYAML for the Codex plugin validator. Release validation requires checked-in forward-test results bound to the current Skill package digest; producing those results remains an explicit Agent evaluation step.
+Checked-in forward results are bound to the current Skill package digest. Cross-component proof is owned by `make verify-suite` in the canonical Scaffold Source, not by this package.
 
-This repository is packaged and released independently from `harness-driven-development`. The two plugins do not call or install each other: this plugin prepares and maintains the repository-level Harness contract that `harness-driven-development` later consumes during ordinary product work. `harnessctl` provides deterministic audit, record, and verification primitives; it does not decide or apply semantic merges.
+## Roll back to v2
 
-## Roll back to v1
-
-For Codex, replace the v2 installation with the immutable v1.0.2 release:
-
-```bash
-codex plugin remove harness-template-sync@fueav-harness-sync
-codex plugin marketplace remove fueav-harness-sync
-codex plugin marketplace add Fueav/harness-template-sync --ref v1.0.2
-codex plugin add harness-template-sync@harness-template-sync
-```
-
-For Claude Code:
-
-```bash
-claude plugin uninstall harness-template-sync@fueav-harness-sync --scope user
-claude plugin marketplace remove fueav-harness-sync --scope user
-claude plugin marketplace add Fueav/harness-template-sync@v1.0.2 --scope user
-claude plugin install harness-template-sync@harness-template-sync --scope user
-```
-
-Published tags are never moved.
+Use the immutable `v2.1.0` tag through the standalone repository marketplace if the v3 source-only delivery contract is not yet supported. Published tags are never moved.

@@ -1,9 +1,0 @@
-{
-  "case_id": "adopt-mature",
-  "mode": "adopt",
-  "decision": "continue",
-  "required_actions": {"AGENTS.md": "merge", "docs/project-contract.md": "add", "harness/scaffold.lock": "add", "scripts/native_check.sh": "preserve"},
-  "forbidden_actions": {"scripts/native_check.sh": ["retire"]},
-  "required_gates": ["harnessctl scaffold record", "harnessctl scaffold audit", "scripts/native_check.sh", "verify-change"],
-  "required_evidence": ["converged scaffold audit", "preserved native check"]
-}

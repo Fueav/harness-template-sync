@@ -80,18 +80,18 @@ class ReleaseValidatorTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0, output)
                 self.assertIn("declared Skill path is invalid", output)
 
-    def test_rejects_invalid_template_compatibility(self) -> None:
+    def test_rejects_invalid_suite_compatibility(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             checkout = self.copy_checkout(temp_dir)
-            path = checkout / "contracts/template-compatibility.json"
+            path = checkout / "contracts/suite-compatibility.json"
             document = json.loads(path.read_text())
-            document["template_contracts"]["workflow_registry"].append(4)
+            document["suite_contract_versions"].append(2)
             path.write_text(json.dumps(document, indent=2) + "\n")
 
             result = self.run_validator(checkout)
             output = result.stdout + result.stderr
             self.assertNotEqual(result.returncode, 0, output)
-            self.assertIn("template compatibility manifest has an invalid contract", output)
+            self.assertIn("suite compatibility manifest has an invalid contract", output)
 
     def test_rejects_extra_skill_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -127,6 +127,25 @@ class ReleaseValidatorTests(unittest.TestCase):
             output = result.stdout + result.stderr
             self.assertNotEqual(result.returncode, 0, output)
             self.assertIn("eval", output.lower())
+
+    def test_requires_versioned_suite_compatibility(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            (checkout / "contracts/suite-compatibility.json").unlink(missing_ok=True)
+            result = self.run_validator(checkout)
+            output = result.stdout + result.stderr
+            self.assertNotEqual(result.returncode, 0, output)
+            self.assertIn("suite-compatibility", output.lower())
+
+    def test_rejects_legacy_lifecycle_modes_in_skill(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            skill = checkout / "plugins" / NAME / "skills" / NAME / "SKILL.md"
+            skill.write_text(skill.read_text() + "\nUse govern for ongoing maintenance.\n")
+            result = self.run_validator(checkout)
+            output = result.stdout + result.stderr
+            self.assertNotEqual(result.returncode, 0, output)
+            self.assertIn("legacy lifecycle mode", output.lower())
 
 
 if __name__ == "__main__":
