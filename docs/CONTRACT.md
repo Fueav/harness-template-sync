@@ -1,6 +1,6 @@
 # Harness Template Sync Contract
 
-Status: v3.0 release contract
+Status: v3.1 release contract
 
 ## Decision
 
@@ -24,17 +24,17 @@ The Skill routes through these interfaces and never bundles their code or invent
 ## Delivery flow
 
 1. Verify the exact canonical Scaffold Source root and choose `bootstrap` for a target without a scaffold record or `upgrade` for a target with one.
-2. Run preflight before mutation. Read both repositories, nearest instructions, native checks, custom gates, CI, hooks, and relevant Git history.
+2. Run preflight before mutation. Use its audit and applicable instructions to inspect the affected contracts, native checks, custom gates, CI, hooks, and callers; expand history only to resolve a concrete question.
 3. Treat the target as a divergent overlay. Unknown content is target-owned; trace callers before changing wrappers or gates.
 4. Resolve every managed path as exact baseline, semantic merge, preserve, relocate, retire, or blocked. Never infer deletion from a name or historical byte match.
-5. Record the resolved scaffold state, commit a clean candidate, run target-native checks and its proportional Harness profile, then run complete.
+5. Record the resolved scaffold state, commit a clean candidate, run target-native checks and its proportional Harness profile, then run complete. Repair change-caused failures within existing authorization; re-record changed resolutions and verify the corrected candidate before completion.
 6. Report exact source and target commits, preserved extensions, checks, and blockers; exit. Do not continue into the target's requested daily work in the same Skill phase.
 
 Git supplies review and rollback. The scaffold lock is a convergence record, not plugin state, an execution transaction, or permission to overwrite target facts.
 
 ## Safety
 
-- Stop on ambiguous ownership, conflicting authority, unrelated dirty changes, required approval, failed gates, or protected business semantics.
+- Wrong source or unrelated dirty state stops entry. Missing authority or unresolved ownership/contract conflicts block the affected mutation after safe preparation; failed gates block completion while authorized diagnosis and repair continue. Persistent blockers require an evidence-backed handoff.
 - Never weaken a target check, hide an expensive gate in a wrapper, or copy `harnessctl` engine source.
 - Never run from a fork, target, sibling checkout, subdirectory, or merely similar template. Canonical Git identity and exact root are mandatory.
 - Never add a migration CLI, bundled playbook, target inventory, project exception, background lifecycle, or plugin-to-plugin call.

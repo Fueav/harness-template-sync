@@ -1,6 +1,6 @@
 ---
 name: harness-template-sync
-description: Use only from the exact canonical ai-first-go-template root to cold-start or explicitly upgrade one target repository.
+description: Bootstrap or explicitly upgrade one repository from canonical ai-first-go-template.
 ---
 
 # Harness Template Sync
@@ -9,13 +9,12 @@ Perform one Template Delivery, prove the handoff, then exit. Never use this Skil
 
 ## Workflow
 
-1. Require the current directory to be the exact clean canonical Scaffold Source Git root. Require one clean Target Repository by absolute path.
+1. Require the exact clean canonical Scaffold Source Git root and one clean Target Repository by absolute path.
 2. Choose `bootstrap` only when the target lacks `harness/scaffold.lock`; otherwise choose explicit `upgrade`. Run `harness/template_delivery.py preflight` before edits.
-3. Read both repositories and the target's instructions, native checks, gates, CI, hooks, and relevant history. Unknown content stays target-owned.
-4. Use the audit from preflight. Trace callers with `rg`; semantically merge managed paths without weakening independently visible gates.
-5. Run `harness/template_delivery.py record` with explicit path resolutions. Commit the target, then run its native checks and proportional Harness verification.
-6. Run `harness/template_delivery.py complete`; report exact revisions, preserved extensions, evidence, and blockers, then exit.
+3. Use the audit and applicable instructions to find affected contracts, native checks, and callers. Unknown content stays target-owned; preserve independently visible gates during semantic merging.
+4. Run `harness/template_delivery.py record` with explicit resolutions. Commit the target; run native checks and proportional verification. Repair change-caused failures within authorization, then re-record changed resolutions and verify the corrected candidate.
+5. Run `harness/template_delivery.py complete`; report exact revisions, preserved extensions, evidence, and blockers, then exit.
 
 Never invoke or install Harness Driven Development. It independently owns later target work after readiness.
 
-Stop on a wrong source root, dirty repository, ambiguous ownership, conflicting authority, required approval, protected semantics, or a failed gate.
+Wrong source or unrelated dirt stops entry. Missing authority or unresolved ownership/contract conflicts block affected changes; failed gates block completion.
