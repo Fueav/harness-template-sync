@@ -39,7 +39,7 @@ Use “cold-start” instead of “upgrade” when the target has no `harness/sc
 ```bash
 codex plugin marketplace upgrade fueav-harness
 codex plugin add harness-template-sync@fueav-harness
-claude plugin marketplace update fueav-harness --scope user
+claude plugin marketplace update fueav-harness
 claude plugin update harness-template-sync@fueav-harness
 ```
 
