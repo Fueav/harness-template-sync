@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "skill_package_sha256": "20ec2f9ee2f64eae3169b40e35acb89efe82bc914235296f6a45640c7bc03c8e",
+  "skill_package_sha256": "c4ce72a166a2a452c0b1a14ae681909caad851c9a26bd87a8cc07f235eb4212d",
   "results": [
     {
       "case_id": "bootstrap-blank",
@@ -27,9 +27,8 @@
       "blockers": [],
       "target_gates": [],
       "evidence": [
-        "The supplied canonical manifest includes incoming AGENTS.md and BLUEPRINT.md, absent from the blank target; adopt them. README.md contains only the blank service description and is retained.",
-        "Source and target are stipulated clean and verified. Generate the initial delivery lock through successful delivery recording rather than copy placeholder state.",
-        "These are proposed semantic actions. Preflight, finish, and verification were not executed."
+        "The clean blank target has only its README.md, which defines no project behavior. Preserve it and add incoming shared AGENTS.md and BLUEPRINT.md from the supplied canonical manifest.",
+        "Generate the initial scaffold.lock as delivery evidence, not as copied state. Use preflight and the available finish or legacy completion interface; no operation was executed."
       ]
     },
     {
@@ -59,9 +58,8 @@
         "scripts/native_check.sh"
       ],
       "evidence": [
-        "Existing AGENTS.md requires preserving broker-assigned order identifiers and running scripts/native_check.sh before handoff. Merge incoming shared guidance while retaining both obligations.",
-        "Preserve the native script and its handoff invocation. Add the absent incoming BLUEPRINT.md and generate the initial lock after successful recording and checks.",
-        "Mature target content alone is not a bootstrap blocker under the clean-source and clean-target assumptions. No commands or checks were executed."
+        "Existing AGENTS.md requires preserving broker-assigned identifiers and running scripts/native_check.sh before handoff. Retain both while merging incoming shared guidance.",
+        "Preserve the check and its invocation; add absent BLUEPRINT.md and generate the initial lock after successful delivery recording and checks. Mature existing content does not itself block a clean bootstrap. No check was executed."
       ]
     },
     {
@@ -100,10 +98,9 @@
         "custom_gates.project_contract"
       ],
       "evidence": [
-        "The prior scaffold record establishes upgrade intent. Add the absent manifest guidance files; regenerate the delivery record after successful finish.",
-        "docs/harness-workflows.md makes project rollout approval mandatory. Preserve that target-owned obligation while adapting shared workflow content.",
-        "The profile registers custom_gates.project_contract with run=scripts/gates/custom_check.sh. Preserve the command and registration in the merged configuration and retain its native applicability.",
-        "The raw profile has empty profiles and gate_sets, so it does not independently establish invocation reachability; actual delivery verification must establish the effective native route without inventing an existing caller. No verification was executed."
+        "The existing scaffold record establishes upgrade intent. Add absent incoming guidance and regenerate the delivery record only after successful verification.",
+        "Preserve mandatory project rollout approval in the adapted workflow authority and preserve custom_gates.project_contract with its scripts/gates/custom_check.sh implementation.",
+        "The supplied profiles and gate_sets are empty, so current caller reachability is not established by this fixture. Actual delivery must preserve the effective native check route; do not infer that the check ran."
       ]
     },
     {
@@ -147,11 +144,10 @@
         "gate_sets.release"
       ],
       "evidence": [
-        "request.md supplies explicit approval and inherited ownership attribution for replacing the every-deployment Specification rule and retiring the old checker. Remove the obsolete rule when merging AGENTS.md and adopt incoming BLUEPRINT.md.",
-        "The wrapper calls both the retired checker and the target-owned production script. Preserve scripts/production_release_gate.sh and move its invocation into the retained custom-gate interface, with that gate reachable in gate_sets.release.",
-        "Update both known wrapper callers: replace the wrapper command registration and its release-set entry consistently in the profile, and replace the obsolete AGENTS.md wrapper instruction with the surviving project production-check requirement. Retire the wrapper only after this routing is retained.",
-        "Preserve unrelated release controls while merging against incoming shared guidance; request.md does not individually classify the other release-set entries as obsolete.",
-        "The audit facts are supplied fixture evidence, not measured history. Placeholder lock hashes establish no real ready state. Lock regeneration, delivery, and all native checks remain proposed."
+        "request.md supplies owner authorization to replace inherited workflow policy and audit attribution of the old checker and every-deployment Specification rule. Remove that obsolete rule when merging AGENTS.md and add incoming BLUEPRINT.md.",
+        "The mixed wrapper invokes both the retired checker and target-owned production check. Preserve scripts/production_release_gate.sh and relocate its invocation to a direct custom-gate registration that remains reachable in gate_sets.release.",
+        "Update both bounded wrapper callers: AGENTS.md must retain the surviving production-check obligation without the retired wrapper, and the profile must consistently replace the wrapper command and release-set reference. Then retire the wrapper and old checker.",
+        "Preserve unrelated release controls during the merge. Placeholder lock data is not ready-state proof; regenerate actual delivery evidence only after successful verification. No audit, delivery, or check was executed."
       ]
     },
     {
@@ -169,15 +165,14 @@
         }
       ],
       "blockers": [
-        "Material managed-path ownership conflict at scripts/unknown_policy.sh: the baseline and owner decision are unavailable, so replacement or retirement cannot be authorized from the supplied facts."
+        "Material ownership conflict at scripts/unknown_policy.sh requires a baseline or owner decision before replacement or retirement."
       ],
       "target_gates": [
         "scripts/unknown_policy.sh"
       ],
       "evidence": [
-        "request.md states upgrade intent and an unresolved managed-path collision; the script itself only prints unknown policy and cannot establish its ownership.",
-        "The skill requires resolution before changing this path and preservation of unknown content. Leave the path and existing lock untouched, withhold delivery completion, and request the missing ownership decision or evidence.",
-        "The listed script is a potential target policy, not a proven active native gate. No checks or delivery were executed."
+        "request.md identifies an incoming managed-path collision without prior baseline or ownership decision. The script text does not resolve whether it is scaffold content or target policy.",
+        "Preserve the unknown content and current record; block changing the conflicted path and completing delivery until ownership is resolved. This potential policy script is not a proven active gate."
       ]
     },
     {
@@ -191,12 +186,12 @@
         }
       ],
       "blockers": [
-        "Unrelated uncommitted target work violates the skill clean-target entry condition."
+        "Target contains unrelated uncommitted work and does not meet the clean-target entry condition."
       ],
       "target_gates": [],
       "evidence": [
-        "The scenario states the target is dirty, and .dirty-change contains unrelated local work. Preserve it and block delivery mutations until an authorized clean target context exists.",
-        "Do not automatically clean, stash, commit, or overwrite unrelated work to satisfy the entry requirement. Bootstrap mode is supplied explicitly. No delivery was executed."
+        "The supplied scenario identifies unrelated uncommitted target work; .dirty-change contains unrelated local work. The skill requires a clean target.",
+        "Preserve this work and stop delivery mutation until an authorized clean target context is available. Do not automatically stash, commit, clean, or overwrite it."
       ]
     },
     {
@@ -210,12 +205,12 @@
         }
       ],
       "blockers": [
-        "Invocation occurs from the target rather than the verified clean canonical Scaffold Source required by the skill."
+        "Invocation is from a target rather than the required clean canonical Scaffold Source root."
       ],
       "target_gates": [],
       "evidence": [
-        "README.md explicitly says this similar checkout is not the canonical Scaffold Source, and the scenario supplies target-root invocation. Stop before preflight or target mutation and resume from the canonical source.",
-        "Upgrade mode is supplied explicitly; source-role failure does not change it. No delivery or verification was executed."
+        "The scenario supplies invocation from the target, and README.md explicitly states this is not the canonical Scaffold Source.",
+        "Stop before preflight or mutation; resume the requested upgrade from the verified clean canonical source."
       ]
     }
   ]
