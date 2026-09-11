@@ -10,7 +10,7 @@
       "name": "harness-template-sync",
       "source": "./plugins/harness-template-sync",
       "description": "Cold-starts or explicitly upgrades one target from the canonical Scaffold Source, then exits.",
-      "version": "3.1.0",
+      "version": "3.2.0",
       "author": {
         "name": "Fueav"
       },

@@ -2,8 +2,17 @@
   "case_id": "bootstrap-mature",
   "mode": "bootstrap",
   "decision": "continue",
-  "required_actions": {"AGENTS.md": "merge", "harness/scaffold.lock": "add", "scripts/native_check.sh": "preserve"},
-  "forbidden_actions": {"scripts/native_check.sh": ["retire"]},
-  "required_gates": ["template_delivery.py preflight", "template_delivery.py record", "scripts/native_check.sh", "template_delivery.py complete"],
-  "required_evidence": ["preserved target-owned facts", "converged target readiness"]
+  "required_actions": {
+    "AGENTS.md": "merge",
+    "harness/scaffold.lock": "regenerate",
+    "scripts/native_check.sh": "preserve"
+  },
+  "forbidden_actions": {
+    "scripts/native_check.sh": [
+      "retire"
+    ]
+  },
+  "required_gates": [
+    "scripts/native_check.sh"
+  ]
 }

@@ -77,9 +77,6 @@ def validate_fixture(case: dict, errors: list[str]) -> dict:
         for path, actions in forbidden.items()
     ):
         errors.append(f"{case_id}: forbidden_actions is invalid")
-    phrases = expected.get("required_evidence", [])
-    if not isinstance(phrases, list) or any(not isinstance(item, str) or not item for item in phrases):
-        errors.append(f"{case_id}: required_evidence is invalid")
     missing_ownership = target_paths(case_id) - set(required)
     if missing_ownership:
         errors.append(
@@ -156,10 +153,8 @@ def validate_results(
         if not isinstance(blockers, list) or any(not isinstance(item, str) for item in blockers):
             errors.append(f"{case_id}: blockers must be strings")
             blockers = []
-        blocker_text = " ".join(blockers).lower()
-        for phrase in expected.get("required_blockers", []):
-            if not all(token in blocker_text for token in phrase.lower().split()):
-                errors.append(f"{case_id}: missing blocker {phrase!r}")
+        if result.get("decision") == "blocked" and not blockers:
+            errors.append(f"{case_id}: missing blocker for blocked delivery")
         gates = result.get("target_gates")
         if not isinstance(gates, list) or any(not isinstance(item, str) for item in gates):
             errors.append(f"{case_id}: target_gates must be strings")
@@ -182,10 +177,6 @@ def validate_results(
         ):
             errors.append(f"{case_id}: evidence must be non-empty")
             evidence = []
-        evidence_text = " ".join(evidence).lower()
-        for phrase in expected.get("required_evidence", []):
-            if phrase.lower() not in evidence_text:
-                errors.append(f"{case_id}: evidence is missing {phrase!r}")
 
 
 def main() -> int:

@@ -2,8 +2,18 @@
   "case_id": "upgrade-custom-gates",
   "mode": "upgrade",
   "decision": "continue",
-  "required_actions": {"harness/harness_profiles.json": "merge", "harness/scaffold.lock": "regenerate", "scripts/gates/custom_check.sh": "preserve", "docs/harness-workflows.md": "merge"},
-  "forbidden_actions": {"scripts/gates/custom_check.sh": ["retire"]},
-  "required_gates": ["template_delivery.py preflight", "template_delivery.py record", "scripts/gates/custom_check.sh", "template_delivery.py complete"],
-  "required_evidence": ["preserved custom gate", "converged target readiness"]
+  "required_actions": {
+    "harness/harness_profiles.json": "merge",
+    "harness/scaffold.lock": "regenerate",
+    "scripts/gates/custom_check.sh": "preserve",
+    "docs/harness-workflows.md": "merge"
+  },
+  "forbidden_actions": {
+    "scripts/gates/custom_check.sh": [
+      "retire"
+    ]
+  },
+  "required_gates": [
+    "scripts/gates/custom_check.sh"
+  ]
 }

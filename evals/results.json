@@ -1,12 +1,16 @@
 {
   "schema_version": 1,
-  "skill_package_sha256": "bf5ffe8fbf6cfdbb12286fba629e3c47c26252b8c71072a551ddfc476998a9e1",
+  "skill_package_sha256": "20ec2f9ee2f64eae3169b40e35acb89efe82bc914235296f6a45640c7bc03c8e",
   "results": [
     {
       "case_id": "bootstrap-blank",
       "mode": "bootstrap",
       "decision": "continue",
       "path_decisions": [
+        {
+          "path": "README.md",
+          "action": "preserve"
+        },
         {
           "path": "AGENTS.md",
           "action": "add"
@@ -16,138 +20,16 @@
           "action": "add"
         },
         {
-          "path": "CONTEXT.md",
-          "action": "add"
-        },
-        {
-          "path": ".ai-boundaries.yml",
-          "action": "add"
-        },
-        {
-          "path": ".gitignore",
-          "action": "add"
-        },
-        {
-          "path": "harness/harness_profiles.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/check_policy_projections.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/template_delivery.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/project_template.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/repository_modules_test.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/repository_verification.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/scaffold_manifest.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/suite_contract.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/suite_conformance.py",
-          "action": "add"
-        },
-        {
-          "path": "CLAUDE.md",
-          "action": "add"
-        },
-        {
-          "path": "docs/branch-collaboration.md",
-          "action": "add"
-        },
-        {
-          "path": "docs/harness-workflows.json",
-          "action": "add"
-        },
-        {
-          "path": "docs/harness-workflows.md",
-          "action": "add"
-        },
-        {
-          "path": "harness/harness.lock",
-          "action": "add"
-        },
-        {
-          "path": "harness/tool_versions.env",
-          "action": "add"
-        },
-        {
-          "path": "scripts/harnessctl.sh",
-          "action": "add"
-        },
-        {
-          "path": "scripts/verify_suite.sh",
-          "action": "add"
-        },
-        {
-          "path": "scripts/init_project.sh",
-          "action": "add"
-        },
-        {
-          "path": "harness/dependencies.json",
-          "action": "add"
-        },
-        {
-          "path": "scripts/with_test_resources.sh",
-          "action": "add"
-        },
-        {
-          "path": "docs/test-resources.md",
-          "action": "add"
-        },
-        {
           "path": "harness/scaffold.lock",
-          "action": "add"
-        },
-        {
-          "path": "README.md",
-          "action": "preserve"
+          "action": "regenerate"
         }
       ],
       "blockers": [],
-      "target_gates": [
-        "template_delivery.py preflight",
-        "template_delivery.py record",
-        "Scaffold audit against harness/scaffold_manifest.json and harness/suite_contract.json",
-        "harness/check_policy_projections.py and changed-prompt eval regression checks",
-        "target native checks",
-        "harness/repository_verification.py ready",
-        "template_delivery.py complete"
-      ],
+      "target_gates": [],
       "evidence": [
-        "Simulation only: every listed operation and gate is proposed or required. No real delivery, Git history comparison, target commit, native check, readiness check, suite, or deployment was executed.",
-        "Use the task assumptions of an exact clean canonical source, one absolute target root, no unrelated target changes, and authorization for this delivery, except where explicit case facts override them.",
-        "Record the actual source revision, final committed target revision, audited manifest resolutions, preserved extensions, native-check results, selected target-profile evidence, readiness proof, and any blockers before real handoff. Placeholder hashes are not verified identities.",
-        "The newly supplied manifest and suite define required paths even where this bounded fixture omits their file bodies. Obtain those bodies from the authorized canonical source during real delivery; do not fabricate them or claim this fixture is itself an executable full checkout.",
-        "Use semantic merges for project contracts and the project_overlay configuration. Preserve native checks, target extensions, and allowed local product facts; do not copy the harnessctl engine.",
-        "Validate required files, executable bits, alias links, and schema versions declared by harness/suite_contract.json. In particular harness/harness_profiles.json must satisfy schema version 3 and docs/harness-workflows.json version 3; preserve the exact harnessctl pin through harness/harness.lock. These target contract checks do not require running source-release Suite Conformance.",
-        "CLAUDE.md is the required alias to AGENTS.md. Optional .claude/skills and domain aliases are created only when their real target paths exist; no absent domain or optional Skill is invented.",
-        "The manifest marks API-design and DB-migration Skills optional. No case supplies existing use of those operations, so they are not selected by default; ordinary package delivery does not justify speculative Skills or product Specifications.",
-        "Keep prompt facts in one owning project artifact with thin pointers. Measure the real final prompt, Skill, and framework line delta and satisfy the applicable initial-bootstrap classification or maintenance constraint; this simulation reports no invented delta.",
-        "A failed real gate blocks completion while authorized change-caused repair continues. Re-record changed resolutions, commit the corrected candidate, and rerun affected checks before complete. Do not invoke or install Harness Driven Development during the one-shot delivery.",
-        "README.md is the only original target file and there is no scaffold.lock, so bootstrap is the correct mode. Preserve the statement that no product behavior has yet been defined.",
-        "Add the required governance, context, workflow, engine-pin, delivery, readiness, suite, and resource-wrapper surfaces listed in path_decisions. Generate the first scaffold.lock through the delivery module rather than writing dummy hashes.",
-        "CONTEXT.md and other required repository contracts may record the observed blank target and source/target roles. They must not invent ownership identities, business modules, trading behavior, production environments, or a product Specification.",
-        "No target-native test is visible in this bounded fixture. Real verification must establish the applicable commands and report scope through the delivered policy, rather than asserting that copied make commands or absent product tests passed.",
-        "Do not copy optional API/DB Skills, domain child instructions, or a product spec merely because the source contains examples. No optional-path retirement is needed because those files do not exist in this target.",
-        "The clarified BLUEPRINT assigns Suite Conformance to Scaffold Source releases that change the handoff. This target delivery requires native checks, its selected Harness profile, scaffold audit, readiness, and complete; it does not require a target Suite Conformance run or sibling plugin checkouts. Required suite contract and interface files remain part of the manifest delivery without turning their presence into an execution requirement.",
-        "Required real-run proof: clean canonical Scaffold Source, native checks, and converged target readiness."
+        "The supplied canonical manifest includes incoming AGENTS.md and BLUEPRINT.md, absent from the blank target; adopt them. README.md contains only the blank service description and is retained.",
+        "Source and target are stipulated clean and verified. Generate the initial delivery lock through successful delivery recording rather than copy placeholder state.",
+        "These are proposed semantic actions. Preflight, finish, and verification were not executed."
       ]
     },
     {
@@ -164,139 +46,22 @@
           "action": "add"
         },
         {
-          "path": "CONTEXT.md",
-          "action": "add"
-        },
-        {
-          "path": ".ai-boundaries.yml",
-          "action": "add"
-        },
-        {
-          "path": ".gitignore",
-          "action": "add"
-        },
-        {
-          "path": "harness/harness_profiles.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/check_policy_projections.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/template_delivery.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/project_template.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/repository_modules_test.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/repository_verification.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/scaffold_manifest.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/suite_contract.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/suite_conformance.py",
-          "action": "add"
-        },
-        {
-          "path": "CLAUDE.md",
-          "action": "add"
-        },
-        {
-          "path": "docs/branch-collaboration.md",
-          "action": "add"
-        },
-        {
-          "path": "docs/harness-workflows.json",
-          "action": "add"
-        },
-        {
-          "path": "docs/harness-workflows.md",
-          "action": "add"
-        },
-        {
-          "path": "harness/harness.lock",
-          "action": "add"
-        },
-        {
-          "path": "harness/tool_versions.env",
-          "action": "add"
-        },
-        {
-          "path": "scripts/harnessctl.sh",
-          "action": "add"
-        },
-        {
-          "path": "scripts/verify_suite.sh",
-          "action": "add"
-        },
-        {
-          "path": "scripts/init_project.sh",
-          "action": "add"
-        },
-        {
-          "path": "harness/dependencies.json",
-          "action": "add"
-        },
-        {
-          "path": "scripts/with_test_resources.sh",
-          "action": "add"
-        },
-        {
-          "path": "docs/test-resources.md",
-          "action": "add"
+          "path": "scripts/native_check.sh",
+          "action": "preserve"
         },
         {
           "path": "harness/scaffold.lock",
-          "action": "add"
-        },
-        {
-          "path": "scripts/native_check.sh",
-          "action": "preserve"
+          "action": "regenerate"
         }
       ],
       "blockers": [],
       "target_gates": [
-        "template_delivery.py preflight",
-        "template_delivery.py record",
-        "Scaffold audit against harness/scaffold_manifest.json and harness/suite_contract.json",
-        "harness/check_policy_projections.py and changed-prompt eval regression checks",
-        "target native checks",
-        "harness/repository_verification.py ready",
-        "template_delivery.py complete",
         "scripts/native_check.sh"
       ],
       "evidence": [
-        "Simulation only: every listed operation and gate is proposed or required. No real delivery, Git history comparison, target commit, native check, readiness check, suite, or deployment was executed.",
-        "Use the task assumptions of an exact clean canonical source, one absolute target root, no unrelated target changes, and authorization for this delivery, except where explicit case facts override them.",
-        "Record the actual source revision, final committed target revision, audited manifest resolutions, preserved extensions, native-check results, selected target-profile evidence, readiness proof, and any blockers before real handoff. Placeholder hashes are not verified identities.",
-        "The newly supplied manifest and suite define required paths even where this bounded fixture omits their file bodies. Obtain those bodies from the authorized canonical source during real delivery; do not fabricate them or claim this fixture is itself an executable full checkout.",
-        "Use semantic merges for project contracts and the project_overlay configuration. Preserve native checks, target extensions, and allowed local product facts; do not copy the harnessctl engine.",
-        "Validate required files, executable bits, alias links, and schema versions declared by harness/suite_contract.json. In particular harness/harness_profiles.json must satisfy schema version 3 and docs/harness-workflows.json version 3; preserve the exact harnessctl pin through harness/harness.lock. These target contract checks do not require running source-release Suite Conformance.",
-        "CLAUDE.md is the required alias to AGENTS.md. Optional .claude/skills and domain aliases are created only when their real target paths exist; no absent domain or optional Skill is invented.",
-        "The manifest marks API-design and DB-migration Skills optional. No case supplies existing use of those operations, so they are not selected by default; ordinary package delivery does not justify speculative Skills or product Specifications.",
-        "Keep prompt facts in one owning project artifact with thin pointers. Measure the real final prompt, Skill, and framework line delta and satisfy the applicable initial-bootstrap classification or maintenance constraint; this simulation reports no invented delta.",
-        "A failed real gate blocks completion while authorized change-caused repair continues. Re-record changed resolutions, commit the corrected candidate, and rerun affected checks before complete. Do not invoke or install Harness Driven Development during the one-shot delivery.",
-        "The absence of scaffold.lock selects bootstrap despite the existing product requirement.",
-        "Preserve the order contract exactly: orders retain broker-assigned identifiers. When slimming AGENTS.md, relocate that real project fact to the newly required CONTEXT.md and retain a direct pointer, rather than duplicating it or substituting scaffold trading examples.",
-        "Keep scripts/native_check.sh unchanged and retain its before-handoff obligation in the merged instructions or an authoritative pointed-to native-check contract.",
-        "The native script currently only prints a message. It is still an explicitly required target check, but its output would not establish unimplemented order-invariant tests or new product coverage.",
-        "Initial bootstrap authorization permits the governance delivery, native verification, and a behavior-preserving relocation of documentation. It does not authorize changing broker-assigned identifiers or inventing a module Specification.",
-        "The clarified BLUEPRINT assigns Suite Conformance to Scaffold Source releases that change the handoff. This target delivery requires native checks, its selected Harness profile, scaffold audit, readiness, and complete; it does not require a target Suite Conformance run or sibling plugin checkouts. Required suite contract and interface files remain part of the manifest delivery without turning their presence into an execution requirement.",
-        "Required real-run proof: preserved target-owned facts and native checks, then converged target readiness."
+        "Existing AGENTS.md requires preserving broker-assigned order identifiers and running scripts/native_check.sh before handoff. Merge incoming shared guidance while retaining both obligations.",
+        "Preserve the native script and its handoff invocation. Add the absent incoming BLUEPRINT.md and generate the initial lock after successful recording and checks.",
+        "Mature target content alone is not a bootstrap blocker under the clean-source and clean-target assumptions. No commands or checks were executed."
       ]
     },
     {
@@ -313,139 +78,32 @@
           "action": "add"
         },
         {
-          "path": "CONTEXT.md",
-          "action": "add"
-        },
-        {
-          "path": ".ai-boundaries.yml",
-          "action": "add"
-        },
-        {
-          "path": ".gitignore",
-          "action": "add"
+          "path": "docs/harness-workflows.md",
+          "action": "merge"
         },
         {
           "path": "harness/harness_profiles.json",
           "action": "merge"
         },
         {
-          "path": "harness/check_policy_projections.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/template_delivery.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/project_template.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/repository_modules_test.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/repository_verification.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/scaffold_manifest.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/suite_contract.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/suite_conformance.py",
-          "action": "add"
-        },
-        {
-          "path": "CLAUDE.md",
-          "action": "add"
-        },
-        {
-          "path": "docs/branch-collaboration.md",
-          "action": "add"
-        },
-        {
-          "path": "docs/harness-workflows.json",
-          "action": "add"
-        },
-        {
-          "path": "docs/harness-workflows.md",
-          "action": "merge"
-        },
-        {
-          "path": "harness/harness.lock",
-          "action": "add"
-        },
-        {
-          "path": "harness/tool_versions.env",
-          "action": "add"
-        },
-        {
-          "path": "scripts/harnessctl.sh",
-          "action": "add"
-        },
-        {
-          "path": "scripts/verify_suite.sh",
-          "action": "add"
-        },
-        {
-          "path": "scripts/init_project.sh",
-          "action": "add"
-        },
-        {
-          "path": "harness/dependencies.json",
-          "action": "add"
-        },
-        {
-          "path": "scripts/with_test_resources.sh",
-          "action": "add"
-        },
-        {
-          "path": "docs/test-resources.md",
-          "action": "add"
+          "path": "scripts/gates/custom_check.sh",
+          "action": "preserve"
         },
         {
           "path": "harness/scaffold.lock",
           "action": "regenerate"
-        },
-        {
-          "path": "scripts/gates/custom_check.sh",
-          "action": "preserve"
         }
       ],
       "blockers": [],
       "target_gates": [
-        "template_delivery.py preflight",
-        "template_delivery.py record",
-        "Scaffold audit against harness/scaffold_manifest.json and harness/suite_contract.json",
-        "harness/check_policy_projections.py and changed-prompt eval regression checks",
-        "target native checks",
-        "harness/repository_verification.py ready",
-        "template_delivery.py complete",
-        "scripts/gates/custom_check.sh"
+        "scripts/gates/custom_check.sh",
+        "custom_gates.project_contract"
       ],
       "evidence": [
-        "Simulation only: every listed operation and gate is proposed or required. No real delivery, Git history comparison, target commit, native check, readiness check, suite, or deployment was executed.",
-        "Use the task assumptions of an exact clean canonical source, one absolute target root, no unrelated target changes, and authorization for this delivery, except where explicit case facts override them.",
-        "Record the actual source revision, final committed target revision, audited manifest resolutions, preserved extensions, native-check results, selected target-profile evidence, readiness proof, and any blockers before real handoff. Placeholder hashes are not verified identities.",
-        "The newly supplied manifest and suite define required paths even where this bounded fixture omits their file bodies. Obtain those bodies from the authorized canonical source during real delivery; do not fabricate them or claim this fixture is itself an executable full checkout.",
-        "Use semantic merges for project contracts and the project_overlay configuration. Preserve native checks, target extensions, and allowed local product facts; do not copy the harnessctl engine.",
-        "Validate required files, executable bits, alias links, and schema versions declared by harness/suite_contract.json. In particular harness/harness_profiles.json must satisfy schema version 3 and docs/harness-workflows.json version 3; preserve the exact harnessctl pin through harness/harness.lock. These target contract checks do not require running source-release Suite Conformance.",
-        "CLAUDE.md is the required alias to AGENTS.md. Optional .claude/skills and domain aliases are created only when their real target paths exist; no absent domain or optional Skill is invented.",
-        "The manifest marks API-design and DB-migration Skills optional. No case supplies existing use of those operations, so they are not selected by default; ordinary package delivery does not justify speculative Skills or product Specifications.",
-        "Keep prompt facts in one owning project artifact with thin pointers. Measure the real final prompt, Skill, and framework line delta and satisfy the applicable initial-bootstrap classification or maintenance constraint; this simulation reports no invented delta.",
-        "A failed real gate blocks completion while authorized change-caused repair continues. Re-record changed resolutions, commit the corrected candidate, and rerun affected checks before complete. Do not invoke or install Harness Driven Development during the one-shot delivery.",
-        "The prior scaffold.lock establishes the supplied upgrade state; its hashes remain simulation placeholders.",
-        "Migrate harness_profiles.json from schema version 2 to the required version 3 as a semantic project overlay. Preserve custom_gates.project_contract and the unchanged scripts/gates/custom_check.sh implementation.",
-        "The original profiles and gate_sets are empty, so copying the custom declaration alone does not prove invocation. Integrate it through the current supported custom-gate interface for the applicable profile or explicitly execute it as a native handoff check, with recorded evidence.",
-        "Merge docs/harness-workflows.md while retaining the mandatory project rollout approval. That control remains attached to rollout and does not block the already-authorized local upgrade and tests.",
-        "Regenerate the existing scaffold.lock from audited final resolutions only after the target policy and custom-gate migration are concretely defined; readiness and the selected target-profile checks must accept the corrected candidate.",
-        "The clarified BLUEPRINT assigns Suite Conformance to Scaffold Source releases that change the handoff. This target delivery requires native checks, its selected Harness profile, scaffold audit, readiness, and complete; it does not require a target Suite Conformance run or sibling plugin checkouts. Required suite contract and interface files remain part of the manifest delivery without turning their presence into an execution requirement.",
-        "Required real-run proof: preserved custom gate and converged target readiness."
+        "The prior scaffold record establishes upgrade intent. Add the absent manifest guidance files; regenerate the delivery record after successful finish.",
+        "docs/harness-workflows.md makes project rollout approval mandatory. Preserve that target-owned obligation while adapting shared workflow content.",
+        "The profile registers custom_gates.project_contract with run=scripts/gates/custom_check.sh. Preserve the command and registration in the merged configuration and retain its native applicability.",
+        "The raw profile has empty profiles and gate_sets, so it does not independently establish invocation reachability; actual delivery verification must establish the effective native route without inventing an existing caller. No verification was executed."
       ]
     },
     {
@@ -462,104 +120,8 @@
           "action": "add"
         },
         {
-          "path": "CONTEXT.md",
-          "action": "add"
-        },
-        {
-          "path": ".ai-boundaries.yml",
-          "action": "add"
-        },
-        {
-          "path": ".gitignore",
-          "action": "add"
-        },
-        {
-          "path": "harness/harness_profiles.json",
-          "action": "merge"
-        },
-        {
-          "path": "harness/check_policy_projections.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/template_delivery.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/project_template.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/repository_modules_test.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/repository_verification.py",
-          "action": "add"
-        },
-        {
-          "path": "harness/scaffold_manifest.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/suite_contract.json",
-          "action": "add"
-        },
-        {
-          "path": "harness/suite_conformance.py",
-          "action": "add"
-        },
-        {
-          "path": "CLAUDE.md",
-          "action": "add"
-        },
-        {
-          "path": "docs/branch-collaboration.md",
-          "action": "add"
-        },
-        {
-          "path": "docs/harness-workflows.json",
-          "action": "add"
-        },
-        {
-          "path": "docs/harness-workflows.md",
-          "action": "add"
-        },
-        {
-          "path": "harness/harness.lock",
-          "action": "add"
-        },
-        {
-          "path": "harness/tool_versions.env",
-          "action": "add"
-        },
-        {
-          "path": "scripts/harnessctl.sh",
-          "action": "add"
-        },
-        {
-          "path": "scripts/verify_suite.sh",
-          "action": "add"
-        },
-        {
-          "path": "scripts/init_project.sh",
-          "action": "add"
-        },
-        {
-          "path": "harness/dependencies.json",
-          "action": "add"
-        },
-        {
-          "path": "scripts/with_test_resources.sh",
-          "action": "add"
-        },
-        {
-          "path": "docs/test-resources.md",
-          "action": "add"
-        },
-        {
-          "path": "harness/scaffold.lock",
-          "action": "regenerate"
+          "path": "harness/gates/release_self_tests.sh",
+          "action": "retire"
         },
         {
           "path": "scripts/run_checker_self_tests.sh",
@@ -570,43 +132,26 @@
           "action": "preserve"
         },
         {
-          "path": "harness/gates/release_self_tests.sh",
-          "action": "retire"
+          "path": "harness/harness_profiles.json",
+          "action": "merge"
+        },
+        {
+          "path": "harness/scaffold.lock",
+          "action": "regenerate"
         }
       ],
       "blockers": [],
       "target_gates": [
-        "template_delivery.py preflight",
-        "template_delivery.py record",
-        "Scaffold audit against harness/scaffold_manifest.json and harness/suite_contract.json",
-        "harness/check_policy_projections.py and changed-prompt eval regression checks",
-        "target native checks",
-        "harness/repository_verification.py ready",
-        "template_delivery.py complete",
-        "scripts/production_release_gate.sh"
+        "scripts/production_release_gate.sh",
+        "custom_gates",
+        "gate_sets.release"
       ],
       "evidence": [
-        "Simulation only: every listed operation and gate is proposed or required. No real delivery, Git history comparison, target commit, native check, readiness check, suite, or deployment was executed.",
-        "Use the task assumptions of an exact clean canonical source, one absolute target root, no unrelated target changes, and authorization for this delivery, except where explicit case facts override them.",
-        "Record the actual source revision, final committed target revision, audited manifest resolutions, preserved extensions, native-check results, selected target-profile evidence, readiness proof, and any blockers before real handoff. Placeholder hashes are not verified identities.",
-        "The newly supplied manifest and suite define required paths even where this bounded fixture omits their file bodies. Obtain those bodies from the authorized canonical source during real delivery; do not fabricate them or claim this fixture is itself an executable full checkout.",
-        "Use semantic merges for project contracts and the project_overlay configuration. Preserve native checks, target extensions, and allowed local product facts; do not copy the harnessctl engine.",
-        "Validate required files, executable bits, alias links, and schema versions declared by harness/suite_contract.json. In particular harness/harness_profiles.json must satisfy schema version 3 and docs/harness-workflows.json version 3; preserve the exact harnessctl pin through harness/harness.lock. These target contract checks do not require running source-release Suite Conformance.",
-        "CLAUDE.md is the required alias to AGENTS.md. Optional .claude/skills and domain aliases are created only when their real target paths exist; no absent domain or optional Skill is invented.",
-        "The manifest marks API-design and DB-migration Skills optional. No case supplies existing use of those operations, so they are not selected by default; ordinary package delivery does not justify speculative Skills or product Specifications.",
-        "Keep prompt facts in one owning project artifact with thin pointers. Measure the real final prompt, Skill, and framework line delta and satisfy the applicable initial-bootstrap classification or maintenance constraint; this simulation reports no invented delta.",
-        "A failed real gate blocks completion while authorized change-caused repair continues. Re-record changed resolutions, commit the corrected candidate, and rerun affected checks before complete. Do not invoke or install Harness Driven Development during the one-shot delivery.",
-        "request-context.md is supplied request/audit evidence, not a target delivery path. The owner authorizes replacing inherited workflow policy, including the old every-deployment Specification rule, and requires the project production check to survive.",
-        "The supplied audit attributes scripts/run_checker_self_tests.sh to unchanged retired scaffold content. The current manifest explicitly retires that path, so retire it after removing its old callers.",
-        "The original wrapper calls both the retired checker and the independent project-owned production gate. Preserve scripts/production_release_gate.sh unchanged and preserve its mandatory execution before every deployment.",
-        "Move the production gate invocation into a dedicated current custom-gate registration, for example production_release running scripts/production_release_gate.sh. Include it in the final release gate set, and update the AGENTS.md deployment instruction to invoke or point to this same gate without requiring an active Specification for every deployment.",
-        "The supplied audit says the original profile and AGENTS.md are the only wrapper callers. Update both, verify that no caller remains, then retire harness/gates/release_self_tests.sh. This retires a now-unused wrapper only after relocating all independently required project behavior.",
-        "Remove the obsolete harness_self_tests registration and its obsolete gate-set reference while merging the current schema version 3 profile. Preserve the required ordering and presence of independent release controls such as AI boundaries and release-context checks according to the incoming profile contract.",
-        "A real verification must prove the production check remains wired into every deployment and the release profile, and that no reference to either retired script survives. Gate-name similarity is not ownership evidence; the new owner and history facts are the reason retirement is allowed.",
-        "The supplied production gate only prints a message, so its authorized local execution is not a production deployment. Preserve and run it as a local check without claiming that production release or deployment approval was exercised.",
-        "The first-round active-Specification conflict is resolved by explicit new authority and ownership evidence. Do not carry that old blocker forward or infer a broader right to remove project gates.",
-        "The clarified BLUEPRINT assigns Suite Conformance to Scaffold Source releases that change the handoff. This target delivery requires native checks, its selected Harness profile, scaffold audit, readiness, and complete; it does not require a target Suite Conformance run or sibling plugin checkouts. Required suite contract and interface files remain part of the manifest delivery without turning their presence into an execution requirement.",
-        "Required real-run proof: independent production gate preserved, no remaining wrapper callers, and a clean converged target."
+        "request.md supplies explicit approval and inherited ownership attribution for replacing the every-deployment Specification rule and retiring the old checker. Remove the obsolete rule when merging AGENTS.md and adopt incoming BLUEPRINT.md.",
+        "The wrapper calls both the retired checker and the target-owned production script. Preserve scripts/production_release_gate.sh and move its invocation into the retained custom-gate interface, with that gate reachable in gate_sets.release.",
+        "Update both known wrapper callers: replace the wrapper command registration and its release-set entry consistently in the profile, and replace the obsolete AGENTS.md wrapper instruction with the surviving project production-check requirement. Retire the wrapper only after this routing is retained.",
+        "Preserve unrelated release controls while merging against incoming shared guidance; request.md does not individually classify the other release-set entries as obsolete.",
+        "The audit facts are supplied fixture evidence, not measured history. Placeholder lock hashes establish no real ready state. Lock regeneration, delivery, and all native checks remain proposed."
       ]
     },
     {
@@ -620,24 +165,19 @@
         },
         {
           "path": "harness/scaffold.lock",
-          "action": "blocked"
+          "action": "preserve"
         }
       ],
       "blockers": [
-        "Unresolved ambiguous ownership: The supplied audit identifies a differing incoming managed path at scripts/unknown_policy.sh, but the prior baseline, ownership determination, and an owner resolution are unavailable. Preserve the existing file and block its replacement, retirement, relocation, and final handoff until the collision is resolved."
+        "Material managed-path ownership conflict at scripts/unknown_policy.sh: the baseline and owner decision are unavailable, so replacement or retirement cannot be authorized from the supplied facts."
       ],
       "target_gates": [
-        "template_delivery.py preflight"
+        "scripts/unknown_policy.sh"
       ],
       "evidence": [
-        "Simulation only; the audit is a provided fact. No preflight, history inspection, native check, Git operation, or delivery command was actually run.",
-        "request-context.md is external case evidence and is not a target delivery path.",
-        "A prior scaffold.lock is now supplied, so upgrade mode is supported and the first-round missing-lock blocker no longer applies. Placeholder hashes do not prove readiness.",
-        "The unknown script alone remains target-owned by default. Unlike the first-round inputs, the new request-context explicitly establishes an incoming managed-path collision, making the ownership uncertainty affect a requested change.",
-        "The blocked path decision means leave the original script intact, not delete it or execute it to guess its purpose. Neither its name nor its printf body establishes ownership or obsolescence.",
-        "Safe, nonconflicting inventory and candidate preparation may continue, but no final lock, ready claim, or delivery completion can bypass this unresolved path.",
-        "Resolve this specific issue with a trustworthy prior baseline or an explicit owner decision that preserves or deliberately supersedes the target contract; do not convert the upgrade into bootstrap.",
-        "Expected stop proof: preflight stopped before target edits because the managed-path ownership collision is unresolved; this simulation executed no preflight."
+        "request.md states upgrade intent and an unresolved managed-path collision; the script itself only prints unknown policy and cannot establish its ownership.",
+        "The skill requires resolution before changing this path and preservation of unknown content. Leave the path and existing lock untouched, withhold delivery completion, and request the missing ownership decision or evidence.",
+        "The listed script is a potential target policy, not a proven active native gate. No checks or delivery were executed."
       ]
     },
     {
@@ -648,23 +188,15 @@
         {
           "path": ".dirty-change",
           "action": "preserve"
-        },
-        {
-          "path": "harness/scaffold.lock",
-          "action": "blocked"
         }
       ],
       "blockers": [
-        "Unrelated dirty changes: The task defines .dirty-change as unrelated local work, violating the clean-target entry condition."
+        "Unrelated uncommitted target work violates the skill clean-target entry condition."
       ],
       "target_gates": [],
       "evidence": [
-        "Simulation only; no preflight, native check, commit, or delivery was executed.",
-        "The explicit dirty marker overrides the normal clean-target assumption. Stop entry before any delivery mutation or target gate.",
-        "Preserve all unrelated work. Do not stash, commit, discard, or overwrite it to force a clean state.",
-        "Bootstrap mode matches the absence of a supplied prior lock, but it does not waive the clean-target requirement. Resume only against a suitable clean target with the unrelated work preserved.",
-        "The new manifest and request evidence for other cases do not alter this entry blocker.",
-        "Expected stop proof: preflight stopped before target edits because unrelated work makes the target ineligible; this simulation executed no preflight."
+        "The scenario states the target is dirty, and .dirty-change contains unrelated local work. Preserve it and block delivery mutations until an authorized clean target context exists.",
+        "Do not automatically clean, stash, commit, or overwrite unrelated work to satisfy the entry requirement. Bootstrap mode is supplied explicitly. No delivery was executed."
       ]
     },
     {
@@ -675,23 +207,15 @@
         {
           "path": "README.md",
           "action": "preserve"
-        },
-        {
-          "path": "harness/scaffold.lock",
-          "action": "blocked"
         }
       ],
       "blockers": [
-        "Required exact canonical Scaffold Source root: The supplied README describes a checkout that is not the exact canonical Scaffold Source."
+        "Invocation occurs from the target rather than the verified clean canonical Scaffold Source required by the skill."
       ],
       "target_gates": [],
       "evidence": [
-        "Simulation only; no preflight, native check, commit, or delivery was executed.",
-        "The task defines README.md as contrary source evidence. A similar template checkout cannot satisfy the exact-canonical-source entry requirement.",
-        "Stop before delivery audit execution, target edits, record, verification, or complete. Preserve the supplied content and do not try to make this source canonical by mutation.",
-        "After an exact clean canonical source is provided, independently establish target cleanliness, upgrade state, and all remaining gates. This early stop attests none of them.",
-        "The new manifest and request evidence for other cases do not change this source blocker.",
-        "Expected stop proof: source identity failed before target edits; this simulation executed no identity command."
+        "README.md explicitly says this similar checkout is not the canonical Scaffold Source, and the scenario supplies target-root invocation. Stop before preflight or target mutation and resume from the canonical source.",
+        "Upgrade mode is supplied explicitly; source-role failure does not change it. No delivery or verification was executed."
       ]
     }
   ]

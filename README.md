@@ -6,12 +6,11 @@ The package is a thin semantic router. The Scaffold Source owns `template_delive
 
 ## Install in Codex
 
-Scaffold maintainers install both independent plugins from the umbrella marketplace:
+Scaffold maintainers install the delivery plugin from the umbrella marketplace:
 
 ```bash
 codex plugin marketplace add Fueav/harness-plugins
 codex plugin add harness-template-sync@fueav-harness
-codex plugin add harness-driven-development@fueav-harness
 ```
 
 ## Install in Claude Code
@@ -19,7 +18,6 @@ codex plugin add harness-driven-development@fueav-harness
 ```bash
 claude plugin marketplace add Fueav/harness-plugins --scope user
 claude plugin install harness-template-sync@fueav-harness --scope user
-claude plugin install harness-driven-development@fueav-harness --scope user
 ```
 
 Restart the client or open a new session after installation.
@@ -32,7 +30,7 @@ Open the exact canonical Scaffold Source root, then use one natural-language req
 Use $harness-template-sync to upgrade /absolute/path/to/target and stop after delivery.
 ```
 
-Use “cold-start” instead of “upgrade” when the target has no `harness/scaffold.lock`. The Skill refuses forks, sibling checkouts, subdirectories, dirty repositories, relative targets, and intent/record mismatches. After completion, work in the target with Harness Driven Development only.
+Use “cold-start” instead of “upgrade” when the target has no `harness/scaffold.lock`. The Skill refuses forks, sibling checkouts, subdirectories, dirty repositories, relative targets, and intent/record mismatches. After delivery, work directly with the target repository commands. The daily compatibility plugin is optional.
 
 ## Upgrade
 
@@ -84,6 +82,3 @@ claude plugin validate . --strict
 
 Checked-in forward results are bound to the current Skill package digest. Cross-component proof is owned by `make verify-suite` in the canonical Scaffold Source, not by this package.
 
-## Roll back to v2
-
-Use the immutable `v2.1.0` tag through the standalone repository marketplace if the v3 source-only delivery contract is not yet supported. Published tags are never moved.

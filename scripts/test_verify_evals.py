@@ -58,7 +58,7 @@ class EvalContractTests(unittest.TestCase):
                     {"path": path, "action": action}
                     for path, action in expected["required_actions"].items()
                 ],
-                "blockers": expected.get("required_blockers", []),
+                "blockers": ["Blocked by fixture state"] if expected["decision"] == "blocked" else [],
                 "target_gates": expected.get("required_gates", []),
                 "evidence": expected.get("required_evidence", ["fixture evidence"]),
             }

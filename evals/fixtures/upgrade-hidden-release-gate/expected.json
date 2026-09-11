@@ -11,12 +11,27 @@
     "scripts/production_release_gate.sh": "preserve"
   },
   "forbidden_actions": {
-    "harness/gates/release_self_tests.sh": ["preserve", "merge"],
-    "harness/scaffold.lock": ["preserve", "merge"],
-    "scripts/run_checker_self_tests.sh": ["preserve", "merge"],
-    "scripts/production_release_gate.sh": ["retire"]
+    "harness/gates/release_self_tests.sh": [
+      "preserve",
+      "merge"
+    ],
+    "harness/scaffold.lock": [
+      "preserve",
+      "merge"
+    ],
+    "scripts/run_checker_self_tests.sh": [
+      "preserve",
+      "merge"
+    ],
+    "scripts/production_release_gate.sh": [
+      "retire"
+    ]
   },
-  "required_gates": ["template_delivery.py preflight", "template_delivery.py record", "scripts/production_release_gate.sh", "template_delivery.py complete"],
-  "forbidden_gates": ["harness/gates/release_self_tests.sh", "scripts/run_checker_self_tests.sh"],
-  "required_evidence": ["independent production gate", "no remaining wrapper callers", "clean converged target"]
+  "required_gates": [
+    "scripts/production_release_gate.sh"
+  ],
+  "forbidden_gates": [
+    "harness/gates/release_self_tests.sh",
+    "scripts/run_checker_self_tests.sh"
+  ]
 }

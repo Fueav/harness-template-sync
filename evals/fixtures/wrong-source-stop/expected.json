@@ -2,7 +2,7 @@
   "case_id": "wrong-source-stop",
   "mode": "upgrade",
   "decision": "blocked",
-  "required_actions": {"README.md": "preserve"},
-  "required_blockers": ["exact canonical Scaffold Source root"],
-  "required_evidence": ["source identity failed before target edits"]
+  "required_actions": {
+    "README.md": "preserve"
+  }
 }

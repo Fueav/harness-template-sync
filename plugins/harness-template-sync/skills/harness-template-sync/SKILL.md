@@ -1,20 +1,12 @@
 ---
 name: harness-template-sync
-description: Bootstrap or explicitly upgrade one repository from canonical ai-first-go-template.
+description: Bootstrap or explicitly upgrade a repository from canonical ai-first-go-template.
 ---
 
-# Harness Template Sync
+# Template Delivery
 
-Perform one Template Delivery, prove the handoff, then exit. Never use this Skill for normal target work or target Harness maintenance.
+Start at the clean canonical Scaffold Source root. Run `harness/template_delivery.py preflight --intent bootstrap|upgrade --target ABSOLUTE_PATH` to inspect a clean target and its delivery differences.
 
-## Workflow
+Adapt the affected shared files while preserving target-owned contracts, native checks and unknown content. Apply existing authorization only to its stated scope. When retiring a wrapper, keep target-owned checks reachable from their native gates. Resolve material ownership conflicts before changing those paths.
 
-1. Require the exact clean canonical Scaffold Source Git root and one clean Target Repository by absolute path.
-2. Choose `bootstrap` only when the target lacks `harness/scaffold.lock`; otherwise choose explicit `upgrade`. Run `harness/template_delivery.py preflight` before edits.
-3. Use the audit and applicable instructions to find affected contracts, native checks, and callers. Unknown content stays target-owned; preserve independently visible gates during semantic merging.
-4. Run `harness/template_delivery.py record` with explicit resolutions. Commit the target; run native checks and proportional verification. Repair change-caused failures within authorization, then re-record changed resolutions and verify the corrected candidate.
-5. Run `harness/template_delivery.py complete`; report exact revisions, preserved extensions, evidence, and blockers, then exit.
-
-Never invoke or install Harness Driven Development. It independently owns later target work after readiness.
-
-Wrong source or unrelated dirt stops entry. Missing authority or unresolved ownership/contract conflicts block affected changes; failed gates block completion.
+Run `harness/template_delivery.py finish` with --intent, --target, --compare-ref and any --resolution path=decision (see --help) to record, verify and complete delivery. Report the resulting revision and relevant evidence. A failed check blocks completion while authorized repair continues. Delivery does not imply deployment or permission to install software.

@@ -1,46 +1,11 @@
-# Harness Template Sync Contract
+# Template Delivery Contract
 
-Status: v3.1 release contract
+Status: v3.2 release contract.
 
-## Decision
+Template Sync adapts one clean Target Repository from the exact canonical Scaffold Source root. The source repository owns executable delivery interfaces; targets own business contracts, deployment, native checks and custom gates. Daily work needs neither this plugin nor delivery convergence.
 
-Harness Template Sync is the semantic adapter for one Template Delivery. It is invoked only while the Agent's current directory is the exact clean canonical `ai-first-go-template` Git root, cold-starts or explicitly upgrades one clean Target Repository named by absolute path, proves the handoff, and exits.
+Preflight verifies source identity, target state and bootstrap/upgrade intent, and returns the differences. Semantic merging preserves target ownership; the owner's explicit simplification scope can change shared workflow controls, but cannot silently remove unrelated native requirements. Finalization records path resolutions, checks the candidate and verifies clean convergence. Report source/target revisions and completed checks. A failed gate blocks completion, not authorized repair.
 
-Normal target work is outside this plugin. After delivery, product changes, incidents, releases, deployments, refactors, and target Harness maintenance use Harness Driven Development alone. The plugins are independent release peers: neither contains, installs, invokes, or coordinates the other at runtime.
+The scaffold lock records the last delivery, not daily permission. Source guards, boundary checks and Git protect execution; unknown ownership stops the affected change. Do not vendor the engine, add target inventories, or launch background maintenance. Delivery does not authorize deployment or unrelated installation.
 
-## Interfaces
-
-| Interface | Owner | Contract |
-| --- | --- | --- |
-| `harness/suite_contract.json` | Scaffold Source | Versioned repository handoff and canonical source identity |
-| `harness/template_delivery.py preflight` | Scaffold Source | Rejects the wrong root, dirty source/target, relative target, and mismatched intent before edits |
-| `harness/template_delivery.py record` | Scaffold Source | Materializes the content-addressed target scaffold record after semantic decisions |
-| `harness/template_delivery.py complete` | Scaffold Source | Requires clean convergence and target `repository_verification.py ready`, then ends delivery |
-| `harnessctl scaffold audit|record` | Pinned engine | Deterministic comparison and record rendering; never semantic edits |
-| Target-native checks | Target Repository | Product, project, deployment, and extension safety |
-
-The Skill routes through these interfaces and never bundles their code or inventories. Supported suite and template contract versions are declared once in `contracts/suite-compatibility.json`.
-
-## Delivery flow
-
-1. Verify the exact canonical Scaffold Source root and choose `bootstrap` for a target without a scaffold record or `upgrade` for a target with one.
-2. Run preflight before mutation. Use its audit and applicable instructions to inspect the affected contracts, native checks, custom gates, CI, hooks, and callers; expand history only to resolve a concrete question.
-3. Treat the target as a divergent overlay. Unknown content is target-owned; trace callers before changing wrappers or gates.
-4. Resolve every managed path as exact baseline, semantic merge, preserve, relocate, retire, or blocked. Never infer deletion from a name or historical byte match.
-5. Record the resolved scaffold state, commit a clean candidate, run target-native checks and its proportional Harness profile, then run complete. Repair change-caused failures within existing authorization; re-record changed resolutions and verify the corrected candidate before completion.
-6. Report exact source and target commits, preserved extensions, checks, and blockers; exit. Do not continue into the target's requested daily work in the same Skill phase.
-
-Git supplies review and rollback. The scaffold lock is a convergence record, not plugin state, an execution transaction, or permission to overwrite target facts.
-
-## Safety
-
-- Wrong source or unrelated dirty state stops entry. Missing authority or unresolved ownership/contract conflicts block the affected mutation after safe preparation; failed gates block completion while authorized diagnosis and repair continue. Persistent blockers require an evidence-backed handoff.
-- Never weaken a target check, hide an expensive gate in a wrapper, or copy `harnessctl` engine source.
-- Never run from a fork, target, sibling checkout, subdirectory, or merely similar template. Canonical Git identity and exact root are mandatory.
-- Never add a migration CLI, bundled playbook, target inventory, project exception, background lifecycle, or plugin-to-plugin call.
-
-## Distribution
-
-This repository independently publishes one plugin and keeps its own semver, tags, GitHub releases, evals, and per-repository marketplaces. The recommended human onboarding uses the `fueav-harness` umbrella marketplace; that index does not change package independence.
-
-The distributed Skill contains only `SKILL.md` and `agents/openai.yaml`. Release validation binds checked-in behavioral results to the package digest and mechanically rejects the retired multi-mode lifecycle.
+The package releases independently. Packaging validation checks paths, versions and compatibility. Evaluation covers per-path ownership decisions; source suite tests execute bootstrap/upgrade and failure cases. Exact wording is not a release criterion.

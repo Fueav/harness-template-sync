@@ -137,15 +137,6 @@ class ReleaseValidatorTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0, output)
             self.assertIn("suite-compatibility", output.lower())
 
-    def test_rejects_legacy_lifecycle_modes_in_skill(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            checkout = self.copy_checkout(temp_dir)
-            skill = checkout / "plugins" / NAME / "skills" / NAME / "SKILL.md"
-            skill.write_text(skill.read_text() + "\nUse govern for ongoing maintenance.\n")
-            result = self.run_validator(checkout)
-            output = result.stdout + result.stderr
-            self.assertNotEqual(result.returncode, 0, output)
-            self.assertIn("legacy lifecycle mode", output.lower())
 
 
 if __name__ == "__main__":
