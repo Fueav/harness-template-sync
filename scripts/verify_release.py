@@ -22,7 +22,7 @@ EXPECTED_COMPATIBILITY = {
     "suite_contract_versions": [1, 2],
     "template_contracts": {
         "scaffold_manifest": [1],
-        "harness_profiles": [3, 4],
+        "harness_profiles": [3, 4, 5],
         "workflow_registry": [3],
         "spec_registry": [1, 2],
     },

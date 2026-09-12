@@ -1,6 +1,6 @@
 {
   "name": "harness-template-sync",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "Cold-starts or explicitly upgrades one target from the canonical Scaffold Source, then exits.",
   "author": {
     "name": "Fueav",
