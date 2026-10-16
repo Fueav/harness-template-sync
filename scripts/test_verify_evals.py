@@ -55,7 +55,7 @@ class EvalContractTests(unittest.TestCase):
                 "mode": case["mode"],
                 "decision": expected["decision"],
                 "path_decisions": [
-                    {"path": path, "action": action}
+                    {"path": path, "action": action[0] if isinstance(action, list) else action}
                     for path, action in expected["required_actions"].items()
                 ],
                 "blockers": ["Blocked by fixture state"] if expected["decision"] == "blocked" else [],
@@ -67,6 +67,7 @@ class EvalContractTests(unittest.TestCase):
             results.append(result)
         return {
             "schema_version": 1,
+            "eval_contract_version": 2,
             "skill_package_sha256": skill_package_sha256(checkout),
             "results": results,
         }
@@ -141,6 +142,32 @@ class EvalContractTests(unittest.TestCase):
             output = result.stdout + result.stderr
             self.assertNotEqual(result.returncode, 0, output)
             self.assertIn("stale skill package digest", output)
+
+    def test_rejects_reusing_an_old_eval_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            payload = self.valid_results(checkout)
+            payload["eval_contract_version"] = 1
+            result_path = checkout / "results.json"
+            result_path.write_text(json.dumps(payload) + "\n")
+            result = self.run_validator(checkout, "--results", str(result_path))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("stale eval contract version", result.stderr)
+
+    def test_accepts_relocation_but_still_requires_native_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            payload = self.valid_results(checkout)
+            target = next(item for item in payload["results"] if item["case_id"] == "upgrade-custom-gates")
+            next(item for item in target["path_decisions"] if item["path"] == "harness/harness_profiles.json")["action"] = "relocate"
+            result_path = checkout / "results.json"
+            result_path.write_text(json.dumps(payload) + "\n")
+            self.assertEqual(self.run_validator(checkout, "--results", str(result_path)).returncode, 0)
+            target["target_gates"] = []
+            result_path.write_text(json.dumps(payload) + "\n")
+            result = self.run_validator(checkout, "--results", str(result_path))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("missing target gate", result.stderr)
 
 
 if __name__ == "__main__":

@@ -1,12 +1,12 @@
 ---
 name: harness-template-sync
-description: Bootstrap or explicitly upgrade a repository from canonical ai-first-go-template.
+description: Bootstrap or explicitly migrate a repository to the outcome workbench from canonical ai-first-go-template.
 ---
 
-# Template Delivery
+# Project Migration
 
-Start at the clean canonical Scaffold Source root. Run `harness/template_delivery.py preflight --intent bootstrap|upgrade --target ABSOLUTE_PATH` to inspect a clean target and its delivery differences.
+From the clean canonical source root, run `harness/template_delivery.py inspect --target ABSOLUTE_PATH`. Inspect the source contract and target native commands; preserve unrelated dirty work and use a clean isolated target before mutation.
 
-Adapt the affected shared files while preserving target-owned contracts, native checks and unknown content. Apply existing authorization only to its stated scope. When retiring a wrapper, keep target-owned checks reachable from their native gates. Resolve material ownership conflicts before changing those paths.
+Adapt `harness/project.json`, the exact engine lock and `.ai-boundaries.yml` while preserving product contracts, target-owned checks and unknown content. Retire copied execution/configuration paths only after their product checks remain reachable through native operations. Resolve material ownership conflicts before changing those paths. Keep instructions concise and project-specific.
 
-Run `harness/template_delivery.py finish` with --intent, --target, --compare-ref and any --resolution path=decision (see --help) to record, verify and complete delivery. For older sources without `finish`, use `record`, the target verifier and `complete`. Report the resulting revision and relevant evidence. A failed check blocks completion while authorized repair continues. Delivery does not imply deployment or permission to install software.
+Run `harness/template_delivery.py verify --target ABSOLUTE_PATH --compare-ref REF` on clean candidates. Report the revisions, actual checks and remaining gaps. Failed checks block completion while authorized repair continues. No delivery record, inventory or legacy command fallback is required. Migration grants no deployment or unrelated installation authority; daily work uses the target's native commands and pinned engine directly.

@@ -4,11 +4,14 @@
   "decision": "continue",
   "required_actions": {
     "AGENTS.md": "merge",
-    "harness/harness_profiles.json": "merge",
+    "harness/harness_profiles.json": "retire",
     "harness/gates/release_self_tests.sh": "retire",
-    "harness/scaffold.lock": "regenerate",
+    "harness/scaffold.lock": "retire",
     "scripts/run_checker_self_tests.sh": "retire",
-    "scripts/production_release_gate.sh": "preserve"
+    "scripts/production_release_gate.sh": "preserve",
+    "harness/project.json": "add",
+    "harness/harness.lock": "add",
+    ".ai-boundaries.yml": "add"
   },
   "forbidden_actions": {
     "harness/gates/release_self_tests.sh": [

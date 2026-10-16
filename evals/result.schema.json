@@ -1,38 +1,103 @@
 {
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "skill_package_sha256", "results"],
+  "required": [
+    "schema_version",
+    "eval_contract_version",
+    "skill_package_sha256",
+    "results"
+  ],
   "properties": {
-    "schema_version": {"const": 1},
-    "skill_package_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "schema_version": {
+      "const": 1
+    },
+    "skill_package_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
     "results": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["case_id", "mode", "decision", "path_decisions", "blockers", "target_gates", "evidence"],
+        "required": [
+          "case_id",
+          "mode",
+          "decision",
+          "path_decisions",
+          "blockers",
+          "target_gates",
+          "evidence"
+        ],
         "properties": {
-          "case_id": {"type": "string"},
-          "mode": {"enum": ["bootstrap", "upgrade"]},
-          "decision": {"enum": ["continue", "blocked"]},
+          "case_id": {
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "bootstrap",
+              "upgrade"
+            ]
+          },
+          "decision": {
+            "enum": [
+              "continue",
+              "blocked"
+            ]
+          },
           "path_decisions": {
             "type": "array",
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["path", "action"],
+              "required": [
+                "path",
+                "action"
+              ],
               "properties": {
-                "path": {"type": "string"},
-                "action": {"enum": ["preserve", "add", "merge", "relocate", "retire", "regenerate", "blocked"]}
+                "path": {
+                  "type": "string"
+                },
+                "action": {
+                  "enum": [
+                    "preserve",
+                    "add",
+                    "merge",
+                    "relocate",
+                    "retire",
+                    "regenerate",
+                    "blocked"
+                  ]
+                }
               }
             }
           },
-          "blockers": {"type": "array", "items": {"type": "string"}},
-          "target_gates": {"type": "array", "items": {"type": "string"}},
-          "evidence": {"type": "array", "items": {"type": "string"}},
-          "prompt_skill_line_delta": {"type": "integer"}
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "target_gates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "prompt_skill_line_delta": {
+            "type": "integer"
+          }
         }
       }
+    },
+    "eval_contract_version": {
+      "const": 2
     }
   }
 }

@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 EVALS = ROOT / "evals"
 ACTIONS = {"preserve", "add", "merge", "relocate", "retire", "regenerate", "blocked"}
 MODES = {"bootstrap", "upgrade"}
+EVAL_CONTRACT_VERSION = 2
 SKILL_FILES = (
     Path("plugins/harness-template-sync/skills/harness-template-sync/SKILL.md"),
     Path("plugins/harness-template-sync/skills/harness-template-sync/agents/openai.yaml"),
@@ -41,6 +42,10 @@ def target_paths(case_id: str) -> set[str]:
     }
 
 
+def accepted_actions(value: object) -> list[str]:
+    return value if isinstance(value, list) else [value]
+
+
 def validate_fixture(case: dict, errors: list[str]) -> dict:
     case_id = case.get("id")
     mode = case.get("mode")
@@ -64,7 +69,9 @@ def validate_fixture(case: dict, errors: list[str]) -> dict:
         errors.append(f"{case_id}: expected decision is invalid")
     required = expected.get("required_actions")
     if not isinstance(required, dict) or any(
-        not isinstance(path, str) or action not in ACTIONS
+        not isinstance(path, str)
+        or not accepted_actions(action)
+        or any(not isinstance(item, str) or item not in ACTIONS for item in accepted_actions(action))
         for path, action in required.items()
     ):
         errors.append(f"{case_id}: required_actions is invalid")
@@ -89,12 +96,14 @@ def validate_fixture(case: dict, errors: list[str]) -> dict:
 def validate_results(
     cases: list[dict], expected_by_id: dict[str, dict], payload: object, errors: list[str]
 ) -> None:
-    expected_fields = {"schema_version", "skill_package_sha256", "results"}
+    expected_fields = {"schema_version", "eval_contract_version", "skill_package_sha256", "results"}
     if not isinstance(payload, dict) or set(payload) != expected_fields:
         errors.append("result payload has an invalid contract")
         return
     if payload.get("schema_version") != 1:
         errors.append("result payload has an invalid schema version")
+    if payload.get("eval_contract_version") != EVAL_CONTRACT_VERSION:
+        errors.append("result payload has a stale eval contract version")
     if payload.get("skill_package_sha256") != skill_package_sha256():
         errors.append("result payload has a stale skill package digest")
     results = payload.get("results")
@@ -144,7 +153,7 @@ def validate_results(
                 continue
             action_by_path[path] = action
         for path, action in expected.get("required_actions", {}).items():
-            if action_by_path.get(path) != action:
+            if action_by_path.get(path) not in accepted_actions(action):
                 errors.append(f"{case_id}: {path} must be {action}")
         for path, forbidden in expected.get("forbidden_actions", {}).items():
             if action_by_path.get(path) in forbidden:
@@ -185,7 +194,7 @@ def main() -> int:
     args = parser.parse_args()
     errors: list[str] = []
     manifest = load(EVALS / "cases.json")
-    if not isinstance(manifest, dict) or set(manifest) != {"schema_version", "cases"}:
+    if not isinstance(manifest, dict) or set(manifest) != {"schema_version", "eval_contract_version", "cases"}:
         errors.append("cases.json has an invalid contract")
         cases: list[dict] = []
     else:
@@ -193,6 +202,8 @@ def main() -> int:
         if manifest.get("schema_version") != 1 or not isinstance(cases, list):
             errors.append("cases.json must use schema version 1 and a cases array")
             cases = []
+        if manifest.get("eval_contract_version") != EVAL_CONTRACT_VERSION:
+            errors.append("cases.json has a stale eval contract version")
     ids = [case.get("id") for case in cases if isinstance(case, dict)]
     if len(ids) != len(set(ids)):
         errors.append("case ids must be unique")

@@ -3,9 +3,11 @@
   "mode": "bootstrap",
   "decision": "continue",
   "required_actions": {
-    "AGENTS.md": "merge",
-    "harness/scaffold.lock": "regenerate",
-    "scripts/native_check.sh": "preserve"
+    "AGENTS.md": "preserve",
+    "scripts/native_check.sh": "preserve",
+    "harness/project.json": "add",
+    "harness/harness.lock": "add",
+    ".ai-boundaries.yml": "add"
   },
   "forbidden_actions": {
     "scripts/native_check.sh": [

@@ -1,0 +1,22 @@
+{
+  "eval_contract_version": 2,
+  "model": "gpt-6-astra",
+  "reasoning_effort": "ultra",
+  "run_date": "2026-10-16",
+  "scope": "expectation-blind routing simulation; no migration commands executed",
+  "skill_package_sha256": "de49cbbf77d39bf6f577f457dc1fa09821b411cf41c24d9f0a150c715b74215c",
+  "inputs": {
+    "evals/cases.json": "1d5d8ab8d2441a8c017b3131d6acc0d499ae3d9838e95591ee28b72499dad275",
+    "evals/result.schema.json": "f598da86254d359de5cb53d35969a44da5672799b78a84422bb4e53358608fe4",
+    "scripts/verify_evals.py": "6a60e275cd92aef3ce4de1a03909575674d03a4a9e8406bc73f37331ffcada8d",
+    "evals/fixtures/ambiguous-ownership-stop/expected.json": "1ba09362e718a2f8eeded9a6908c74ba812965a6dad8f6ed9fb293648203fd0c",
+    "evals/fixtures/bootstrap-blank/expected.json": "a3fa8b5b38ca06ff99c42acc6bcd24f79c185725e271a9f35d0b8e53b2a865ec",
+    "evals/fixtures/bootstrap-mature/expected.json": "1e1bf13efdfba83930f0f122c0b77e649486977d49d9cfb9b6a4e35cf61923a7",
+    "evals/fixtures/dirty-target-stop/expected.json": "39c7385e865f3294de766d3d183abe55d4fe5d66983a7e989e3483291ea4d58c",
+    "evals/fixtures/upgrade-custom-gates/expected.json": "829fd676665ecc169ca687ebb6c8bba0ec3f147bad86678859b698b3c8835f7a",
+    "evals/fixtures/upgrade-hidden-release-gate/expected.json": "738b5e2fd6add17091e46447236c46a477a51a1489ad43adaae430fe20ce2bae",
+    "evals/fixtures/wrong-source-stop/expected.json": "1c4e3be372ae7960e5647798e099fadc1f008f8af3aea2dce8d8f3f607ea8727"
+  },
+  "raw_result_sha256": "aaf42f382b296e9497eb2ef29fbcc4d3d3ca2b5c995f4176f0fd3f5a4f74a3af",
+  "raw_trace_sha256": "d3e9d04c3d765fcd80729dd7ab0fc4c653943318b7e87fdaa030ff852bbc3615"
+}
