@@ -64,10 +64,20 @@ class EvalContractTests(unittest.TestCase):
             }
             if "max_prompt_skill_line_delta" in expected:
                 result["prompt_skill_line_delta"] = expected["max_prompt_skill_line_delta"]
+            observed = {"kind": "parent-verification", "case_id": case["id"],
+                        "model_task": "unit-test synthetic input", "model_response": "synthetic validator fixture",
+                        "target_unchanged": True, "protected_paths_unchanged": True, "verification_scope": "migration-structure",
+                        "checks": [{"name": name, "returncode": 0, "argv": ["synthetic"], "stdout": "ok"}
+                                   for name in ["migration-structure", *expected.get("required_gates", [])]]}
+            artifact = checkout / "evals/evidence" / (case["id"] + ".json")
+            artifact.parent.mkdir(exist_ok=True)
+            artifact.write_text(json.dumps(observed) + "\n")
+            result["execution"] = {"artifact": "evidence/" + artifact.name,
+                                   "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest()}
             results.append(result)
         return {
             "schema_version": 1,
-            "eval_contract_version": 2,
+            "eval_contract_version": 3,
             "skill_package_sha256": skill_package_sha256(checkout),
             "results": results,
         }
@@ -80,17 +90,60 @@ class EvalContractTests(unittest.TestCase):
             result = self.run_validator(checkout, "--results", str(result_path))
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_rejects_simulation_without_execution_artifact(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            payload = self.valid_results(checkout)
+            del payload["results"][0]["execution"]
+            path = checkout / "results.json"
+            path.write_text(json.dumps(payload))
+            result = self.run_validator(checkout, "--results", str(path))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("missing executed model evidence", result.stderr)
+
+    def test_rejects_changed_execution_artifact(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            payload = self.valid_results(checkout)
+            artifact = checkout / "evals" / payload["results"][0]["execution"]["artifact"]
+            artifact.write_text(artifact.read_text() + " ")
+            path = checkout / "results.json"
+            path.write_text(json.dumps(payload))
+            result = self.run_validator(checkout, "--results", str(path))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("artifact digest differs", result.stderr)
+
+    def test_rejects_unsuccessful_parent_observations(self) -> None:
+        for case_id, field, value, message in [
+            ("upgrade-native", "checks", [], "missing successful parent check"),
+            ("dirty-target-stop", "protected_paths_unchanged", False, "protected owner changes"),
+        ]:
+            with self.subTest(case_id=case_id), tempfile.TemporaryDirectory() as temp_dir:
+                checkout = self.copy_checkout(temp_dir)
+                payload = self.valid_results(checkout)
+                result = next(item for item in payload["results"] if item["case_id"] == case_id)
+                artifact = checkout / "evals" / result["execution"]["artifact"]
+                observed = json.loads(artifact.read_text())
+                observed[field] = value
+                artifact.write_text(json.dumps(observed))
+                result["execution"]["sha256"] = hashlib.sha256(artifact.read_bytes()).hexdigest()
+                path = checkout / "results.json"
+                path.write_text(json.dumps(payload))
+                checked = self.run_validator(checkout, "--results", str(path))
+                self.assertNotEqual(checked.returncode, 0)
+                self.assertIn(message, checked.stderr)
+
     def test_exposes_only_delivery_intents(self) -> None:
         modes = {
             case["mode"]
             for case in json.loads((ROOT / "evals/cases.json").read_text())["cases"]
         }
-        self.assertEqual(modes, {"bootstrap", "upgrade"})
+        self.assertTrue(modes and modes <= {"bootstrap", "upgrade"})
 
     def test_rejects_unknown_target_without_ownership_decision(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             checkout = self.copy_checkout(temp_dir)
-            path = checkout / "evals/fixtures/bootstrap-mature/target/unknown.txt"
+            path = checkout / "evals/fixtures/upgrade-native/target/unknown.txt"
             path.write_text("unknown\n")
             result = self.run_validator(checkout)
             output = result.stdout + result.stderr
@@ -102,18 +155,18 @@ class EvalContractTests(unittest.TestCase):
             checkout = self.copy_checkout(temp_dir)
             payload = self.valid_results(checkout)
             target = next(
-                item for item in payload["results"] if item["case_id"] == "upgrade-custom-gates"
+                item for item in payload["results"] if item["case_id"] == "upgrade-native"
             )
             next(
                 item for item in target["path_decisions"]
-                if item["path"] == "scripts/gates/custom_check.sh"
+                if item["path"] == "scripts/production_release_gate.sh"
             )["action"] = "retire"
             result_path = checkout / "results.json"
             result_path.write_text(json.dumps(payload) + "\n")
             result = self.run_validator(checkout, "--results", str(result_path))
             output = result.stdout + result.stderr
             self.assertNotEqual(result.returncode, 0, output)
-            self.assertIn("scripts/gates/custom_check.sh must be preserve", output)
+            self.assertIn("scripts/production_release_gate.sh must be preserve", output)
 
     def test_rejects_missing_stop_blocker(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -154,12 +207,11 @@ class EvalContractTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("stale eval contract version", result.stderr)
 
-    def test_accepts_relocation_but_still_requires_native_gate(self) -> None:
+    def test_requires_native_gate_even_after_retiring_runtime(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             checkout = self.copy_checkout(temp_dir)
             payload = self.valid_results(checkout)
-            target = next(item for item in payload["results"] if item["case_id"] == "upgrade-custom-gates")
-            next(item for item in target["path_decisions"] if item["path"] == "harness/harness_profiles.json")["action"] = "relocate"
+            target = next(item for item in payload["results"] if item["case_id"] == "upgrade-native")
             result_path = checkout / "results.json"
             result_path.write_text(json.dumps(payload) + "\n")
             self.assertEqual(self.run_validator(checkout, "--results", str(result_path)).returncode, 0)

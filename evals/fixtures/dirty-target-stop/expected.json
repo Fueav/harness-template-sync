@@ -1,8 +1,14 @@
 {
   "case_id": "dirty-target-stop",
-  "mode": "bootstrap",
+  "mode": "upgrade",
   "decision": "blocked",
   "required_actions": {
-    ".dirty-change": "preserve"
-  }
+    "harness/harness_profiles.json": [
+      "preserve",
+      "blocked"
+    ]
+  },
+  "protected_paths": [
+    "harness/harness_profiles.json"
+  ]
 }

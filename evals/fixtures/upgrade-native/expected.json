@@ -1,0 +1,37 @@
+{
+  "case_id": "upgrade-native",
+  "mode": "upgrade",
+  "decision": "continue",
+  "required_actions": {
+    "Makefile": "merge",
+    ".ai-boundaries.yml": [
+      "preserve",
+      "merge"
+    ],
+    "AGENTS.md": "merge",
+    "docs/operator-notes.txt": "preserve",
+    "product/order.json": "preserve",
+    "harness/harness_profiles.json": "retire",
+    "harness/scaffold.lock": "retire",
+    "harness/project.json": "retire",
+    "harness/harness.lock": "retire",
+    "scripts/accept.sh": "preserve",
+    "scripts/production_release_gate.sh": "preserve",
+    "scripts/run_checker_self_tests.sh": "retire",
+    "harness/gates/release_self_tests.sh": "retire"
+  },
+  "required_gates": [
+    "make verify",
+    "make accept"
+  ],
+  "forbidden_actions": {
+    "scripts/production_release_gate.sh": [
+      "retire",
+      "merge"
+    ],
+    "docs/operator-notes.txt": [
+      "retire",
+      "merge"
+    ]
+  }
+}

@@ -1,11 +1,11 @@
 # Project Migration Contract
 
-Status: v4 breaking release contract.
+Status: local, unpublished 5.0.0 candidate; suite contract v4 is versioned independently.
 
-Template Sync migrates one named target from the canonical source root to the outcome workbench. The source owns inspection and verification; the target owns product contracts, native operations and deployment controls. Daily work needs no migration plugin.
+Template Sync performs one explicit migration from the clean canonical source root. The source owns `template_delivery.py init/inspect/verify`; the target owns its product contracts, native execution, independent acceptance and deployment controls. Daily work needs no migration plugin.
 
-Inspect source identity and target state before changing files. Merge the project's execution descriptor, exact engine lock and boundary policy; remove obsolete copied execution and configuration only after preserving target-owned checks through native operations. Preserve unknown content and unrelated work. Material ownership conflicts block only the affected changes. Verification binds clean source/target candidates and the actual engine result; report its scope without claiming product or deployment success beyond the evidence.
+Inspect source identity and target state before changing files. Preserve unrelated dirty work, target-owned checks, boundaries and unknown content. Resolve material ownership conflicts before changing those paths. Remove retired runtime paths after their product checks remain reachable through native commands. No engine, descriptor, lock, receipt, compatibility entry or second runtime is delivered.
 
-There is no delivery inventory, scaffold record, legacy fallback, bundled engine or second runtime. Old consumers remain pinned to their existing release. Migration does not authorize deployment, background maintenance or unrelated installation.
+Source `verify` requires clean source and target candidates and proves only migration structure. Execute the target's native checks and independent acceptance when defined; report their actual results separately, with revisions and gaps. A structural pass is not product or deployment acceptance. Migration grants no deployment, background maintenance or unrelated installation authority.
 
-The package releases independently. Packaging tests validate shape and compatibility; executed expectation-blind model cases assess ownership and routing decisions. Actual migration and native outcomes are verified separately by the canonical source and the target project.
+The package releases independently. Packaging checks validate shape and compatibility; expectation-blind model evals execute bounded migrations, followed by independent parent verification. Historical simulations remain historical evidence.

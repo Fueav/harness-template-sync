@@ -17,7 +17,7 @@ UMBRELLA_NAME = "fueav-harness"
 PLUGIN = ROOT / "plugins" / NAME
 SKILL = PLUGIN / "skills" / NAME
 COMPATIBILITY = ROOT / "contracts" / "suite-compatibility.json"
-EXPECTED_COMPATIBILITY = {'schema_version': 1, 'suite_contract_versions': [3], 'template_contracts': {'project': [1], 'harness_lock': [1]}}
+EXPECTED_COMPATIBILITY = {'schema_version': 2, 'suite_contract_versions': [4], 'template_contracts': {'migration': [2]}}
 
 
 def load_json(path: Path) -> dict:

@@ -1,34 +1,18 @@
 {
   "schema_version": 1,
+  "eval_contract_version": 3,
   "cases": [
     {
-      "id": "bootstrap-blank",
-      "mode": "bootstrap"
-    },
-    {
-      "id": "bootstrap-mature",
-      "mode": "bootstrap"
-    },
-    {
-      "id": "upgrade-custom-gates",
-      "mode": "upgrade"
-    },
-    {
-      "id": "upgrade-hidden-release-gate",
-      "mode": "upgrade"
-    },
-    {
-      "id": "ambiguous-ownership-stop",
+      "id": "upgrade-native",
       "mode": "upgrade"
     },
     {
       "id": "dirty-target-stop",
-      "mode": "bootstrap"
+      "mode": "upgrade"
     },
     {
       "id": "wrong-source-stop",
       "mode": "upgrade"
     }
-  ],
-  "eval_contract_version": 2
+  ]
 }

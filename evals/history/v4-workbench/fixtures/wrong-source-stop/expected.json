@@ -1,0 +1,8 @@
+{
+  "case_id": "wrong-source-stop",
+  "mode": "upgrade",
+  "decision": "blocked",
+  "required_actions": {
+    "README.md": "preserve"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "harness-template-sync",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Routes one canonical-source scaffold delivery to the packaged Skill.",
   "author": {
     "name": "Fueav",

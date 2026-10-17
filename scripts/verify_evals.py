@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 EVALS = ROOT / "evals"
 ACTIONS = {"preserve", "add", "merge", "relocate", "retire", "regenerate", "blocked"}
 MODES = {"bootstrap", "upgrade"}
-EVAL_CONTRACT_VERSION = 2
+EVAL_CONTRACT_VERSION = 3
 SKILL_FILES = (
     Path("plugins/harness-template-sync/skills/harness-template-sync/SKILL.md"),
     Path("plugins/harness-template-sync/skills/harness-template-sync/agents/openai.yaml"),
@@ -178,6 +178,37 @@ def validate_results(
             delta = result.get("prompt_skill_line_delta")
             if not isinstance(delta, int) or delta > expected["max_prompt_skill_line_delta"]:
                 errors.append(f"{case_id}: prompt/Skill line budget exceeded")
+        execution = result.get("execution")
+        if not isinstance(execution, dict) or set(execution) != {"artifact", "sha256"}:
+            errors.append(f"{case_id}: missing executed model evidence")
+        else:
+            artifact = EVALS / str(execution["artifact"])
+            try:
+                if not artifact.resolve().is_relative_to((EVALS / "evidence").resolve()):
+                    raise ValueError("artifact must stay inside evals/evidence")
+                raw = artifact.read_bytes()
+                if hashlib.sha256(raw).hexdigest() != execution["sha256"]:
+                    raise ValueError("execution artifact digest differs")
+                observed = json.loads(raw)
+                if observed.get("case_id") != case_id or observed.get("kind") != "parent-verification":
+                    raise ValueError("wrong execution artifact identity")
+                if not observed.get("model_task") or not observed.get("model_response"):
+                    raise ValueError("missing executed model task or response")
+                if result["decision"] == "continue":
+                    checks = observed.get("checks", [])
+                    for command in ("migration-structure", *expected.get("required_gates", [])):
+                        if not any(c.get("name") == command and c.get("returncode") == 0
+                                   and c.get("argv") and "stdout" in c for c in checks):
+                            raise ValueError(f"missing successful parent check {command}")
+                    if observed.get("verification_scope") != "migration-structure":
+                        raise ValueError("source verification is not product acceptance")
+                elif expected.get("protected_paths"):
+                    if observed.get("protected_paths_unchanged") is not True:
+                        raise ValueError("protected owner changes were not checked unchanged")
+                elif observed.get("target_unchanged") is not True:
+                    raise ValueError("blocked target was not independently checked unchanged")
+            except (OSError, ValueError, TypeError, AttributeError) as error:
+                errors.append(f"{case_id}: invalid executed model evidence: {error}")
         evidence = result.get("evidence")
         if (
             not isinstance(evidence, list)

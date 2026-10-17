@@ -1,0 +1,98 @@
+{
+  "kind": "parent-verification",
+  "case_id": "upgrade-native",
+  "agent": "/root/sync_eval_upgrade",
+  "model_task": "Read and use the Skill at <skill>. Work from <source>. Target: <target>.\n\nMigrate this target to the current canonical contract. The owner authorizes replacing inherited Harness workflow paths. The supplied audit establishes that harness/ and scripts/run_checker_self_tests.sh are inherited; the wrapper calls the project-owned production_release_gate.sh. Preserve the broker order contract, independent acceptance, protected files and other project content. Complete the migration and report actual verification, committing only this fixture's authorized changes when needed. Do not deploy or install anything.\n\n\nThis is an execution task: perform authorized work, use available native tools, and report the actual outcome and remaining gaps. You may commit only authorized target changes when needed. Do not push, deploy, install plugins, or modify the source. Do not read any evaluator or expected-result files.\n",
+  "model_response": "迁移完成，目标工作区干净。\n\n- 目标提交：`3961570d76e607d06fadef7e3b80d6f702bc0b2f`\n- 规范源提交：`9cc4b7b55728a6b0fcfd3ab6e6e5143f09f29098`，contract v4。\n- `make verify` 直接执行保留的 `scripts/production_release_gate.sh`；已删除继承的 Harness 目录与自测脚本。\n- 实际通过：`make verify accept`、`git diff --check`、迁移结构验证（`status: verified`、`retired: []`）。\n- 订单契约、独立验收、保护规则、受保护脚本及运营说明均未修改。规范源未修改，无部署、安装或推送。\n\n本次 fixture 范围无剩余缺口。\n",
+  "normalization": "Local absolute paths replaced with <source>, <target>, <skill> and <eval>; exit codes and content unchanged.",
+  "source_commit": "9cc4b7b55728a6b0fcfd3ab6e6e5143f09f29098",
+  "target_before": "f743ee90baee1bcfbfde9fadbbbf9fe64f12b6dc",
+  "target_after": "3961570d76e607d06fadef7e3b80d6f702bc0b2f",
+  "target_status": "",
+  "checks": [
+    {
+      "name": "migration-structure",
+      "argv": [
+        "python3",
+        "harness/template_delivery.py",
+        "verify",
+        "--target",
+        "<target>"
+      ],
+      "cwd": "<source>",
+      "returncode": 0,
+      "stdout": "{\"contract_version\": 4, \"dirty\": false, \"missing\": [], \"native_entrypoints\": [\"Makefile\"], \"retired\": [], \"schema_version\": 1, \"scope\": \"migration-structure\", \"source_commit\": \"9cc4b7b55728a6b0fcfd3ab6e6e5143f09f29098\", \"status\": \"verified\", \"target\": \"/private<target>\", \"target_commit\": \"3961570d76e607d06fadef7e3b80d6f702bc0b2f\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "make verify",
+      "argv": [
+        "make",
+        "verify"
+      ],
+      "cwd": "<target>",
+      "returncode": 0,
+      "stdout": "bash scripts/production_release_gate.sh\nBroker order contract passed\n",
+      "stderr": ""
+    },
+    {
+      "name": "make accept",
+      "argv": [
+        "make",
+        "accept"
+      ],
+      "cwd": "<target>",
+      "returncode": 0,
+      "stdout": "bash scripts/accept.sh\nIndependent fixture acceptance passed\n",
+      "stderr": ""
+    }
+  ],
+  "file_changes": {
+    ".ai-boundaries.yml": "unchanged",
+    "AGENTS.md": "changed",
+    "Makefile": "changed",
+    "docs/operator-notes.txt": "unchanged",
+    "harness/gates/release_self_tests.sh": "removed",
+    "harness/harness.lock": "removed",
+    "harness/harness_profiles.json": "removed",
+    "harness/project.json": "removed",
+    "harness/scaffold.lock": "removed",
+    "product/order.json": "unchanged",
+    "scripts/accept.sh": "unchanged",
+    "scripts/production_release_gate.sh": "unchanged",
+    "scripts/run_checker_self_tests.sh": "removed"
+  },
+  "preserved_files_sha256": {
+    "docs/operator-notes.txt": "f3f85543b1e5593934afd1230467b826b052ede7df829e4dbe0a6a20f5b343b6",
+    "product/order.json": "cdf6c862eaae8ef3d3558c4ec66706275827da689ea107dccc74ccaadea62a7c",
+    "scripts/accept.sh": "c4ca2c0380fa4b7030ccfad7cf80d6191130b1799fde778bd7bbecda44e2e728",
+    "scripts/production_release_gate.sh": "4a9afc3f53fc98173171356a8d305de569a6688bf02ebcc54b4a4b6d4226edde"
+  },
+  "verification_scope": "migration-structure",
+  "negative_controls": [
+    {
+      "name": "make verify rejects corrupt broker_order_id",
+      "argv": [
+        "make",
+        "verify"
+      ],
+      "cwd": "<negative-control-copy>",
+      "returncode": 2,
+      "stdout": "bash scripts/production_release_gate.sh\n",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json; from pathlib import Path; x=json.loads(Path(\"product/order.json\").read_text()); assert x[\"broker_order_id\"] == \"broker-7\"\n                                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nmake: *** [verify] Error 1\n",
+      "expected": "nonzero"
+    },
+    {
+      "name": "make accept rejects corrupt client_order_id",
+      "argv": [
+        "make",
+        "accept"
+      ],
+      "cwd": "<negative-control-copy>",
+      "returncode": 2,
+      "stdout": "bash scripts/accept.sh\n",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import json; from pathlib import Path; x=json.loads(Path(\"product/order.json\").read_text()); assert x[\"client_order_id\"] == \"client-2\"; assert x[\"broker_order_id\"] != x[\"client_order_id\"]\n                                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nmake: *** [accept] Error 1\n",
+      "expected": "nonzero"
+    }
+  ]
+}

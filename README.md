@@ -1,8 +1,10 @@
 # Harness Template Sync
 
-`harness-template-sync` performs one cold start or explicit upgrade from the exact canonical `ai-first-go-template` root to a named target, verifies the migrated candidate, and exits. It is not used for daily target work or target Harness maintenance.
+`harness-template-sync` performs one cold start or explicit upgrade from the exact canonical `ai-first-go-template` root to a named target, checks migration structure, runs the target's native checks, and exits. It is not used for daily target work or target Harness maintenance.
 
-The package is a thin semantic router. The Scaffold Source owns `template_delivery.py`, the suite contract, and the pinned `harnessctl` contract; the target owns its product facts, extensions, and native checks. See [`docs/CONTRACT.md`](docs/CONTRACT.md).
+The package is a thin semantic router. The Scaffold Source owns `template_delivery.py`, and suite contract v4; the target owns its product facts, extensions, and native checks. See [`docs/CONTRACT.md`](docs/CONTRACT.md).
+
+This checkout is an unpublished **5.0.0 candidate**. The installation commands below describe distribution coordinates; they do not publish or install this checkout.
 
 ## Install in Codex
 
@@ -30,7 +32,7 @@ Open the exact canonical Scaffold Source root, then use one natural-language req
 Use $harness-template-sync to upgrade /absolute/path/to/target and stop after delivery.
 ```
 
-The source interfaces are `inspect --target ABSOLUTE_PATH` and `verify --target ABSOLUTE_PATH --compare-ref REF`. The target receives one project descriptor, exact engine lock and boundary policy; its native product checks survive the migration. Old copied runtime/configuration paths are removed, with no scaffold record or compatibility fallback. Verification requires clean candidates. Daily work uses target commands directly.
+The source owns `harness/template_delivery.py init`, `inspect --target ABSOLUTE_PATH` and `verify --target ABSOLUTE_PATH`. Targets keep `AGENTS.md`, `Makefile`, `.ai-boundaries.yml` and their native product checks. Retired runtime paths leave entirely. Source verification requires clean candidates and checks migration structure only; execute native verification and independent acceptance separately. Daily work uses target commands directly.
 
 ## Upgrade
 
@@ -77,5 +79,5 @@ claude plugin validate plugins/harness-template-sync --strict
 claude plugin validate . --strict
 ```
 
-Checked-in forward results are bound to the current Skill package digest. Cross-component proof is owned by source migration verification in the canonical Scaffold Source, not by this package.
+Checked-in forward results are bound to the current Skill package digest. The model cases execute bounded migrations; parent checks inspect resulting files and rerun native checks. These establish migration behavior, not real-product acceptance.
 
