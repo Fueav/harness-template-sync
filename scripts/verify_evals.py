@@ -46,6 +46,33 @@ def accepted_actions(value: object) -> list[str]:
     return value if isinstance(value, list) else [value]
 
 
+def validate_run(cases: list[dict], errors: list[str]) -> None:
+    try:
+        run = load(EVALS / "run.json")
+        if not isinstance(run, dict) or run.get("schema_version") != 1:
+            raise ValueError("invalid run contract")
+        if run.get("eval_contract_version") != EVAL_CONTRACT_VERSION:
+            raise ValueError("stale run eval contract version")
+        if run.get("skill_package_sha256") != skill_package_sha256():
+            raise ValueError("stale run skill package digest")
+        recorded = run.get("input_sha256")
+        if not isinstance(recorded, dict):
+            raise ValueError("run input digests must be an object")
+        current = {
+            path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+            for case in cases
+            for path in (EVALS / "fixtures" / case["id"]).rglob("*")
+            if path.is_file()
+        }
+        if set(recorded) != set(current):
+            raise ValueError("run input set differs from current case fixtures")
+        changed = [path for path, digest in current.items() if recorded[path] != digest]
+        if changed:
+            raise ValueError("run input digest differs: " + ", ".join(sorted(changed)))
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        errors.append(f"invalid eval run: {error}")
+
+
 def validate_fixture(case: dict, errors: list[str]) -> dict:
     case_id = case.get("id")
     mode = case.get("mode")
@@ -247,6 +274,7 @@ def main() -> int:
     if not isinstance(schema, dict) or schema.get("type") != "object":
         errors.append("result schema is invalid")
     if args.results:
+        validate_run(cases, errors)
         try:
             results = load(args.results)
         except (OSError, json.JSONDecodeError) as error:

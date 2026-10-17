@@ -90,6 +90,39 @@ class EvalContractTests(unittest.TestCase):
             result = self.run_validator(checkout, "--results", str(result_path))
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_rejects_changed_inputs_with_stale_execution_evidence(self) -> None:
+        for relative in ("request.md", "expected.json", "target/product/order.json"):
+            with self.subTest(input=relative), tempfile.TemporaryDirectory() as temp_dir:
+                checkout = self.copy_checkout(temp_dir)
+                fixture = checkout / "evals/fixtures/upgrade-native" / relative
+                fixture.write_text(fixture.read_text() + "\n")
+                result = self.run_validator(checkout, "--results", "evals/results.json")
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("run input digest differs", result.stderr)
+
+    def test_rejects_incomplete_or_extra_run_inputs(self) -> None:
+        for action in ("remove", "add"):
+            with self.subTest(action=action), tempfile.TemporaryDirectory() as temp_dir:
+                checkout = self.copy_checkout(temp_dir)
+                run_path = checkout / "evals/run.json"
+                run = json.loads(run_path.read_text())
+                if action == "remove":
+                    run["input_sha256"].pop(next(iter(run["input_sha256"])))
+                else:
+                    run["input_sha256"]["evals/fixtures/stale-case/request.md"] = "0" * 64
+                run_path.write_text(json.dumps(run))
+                result = self.run_validator(checkout, "--results", "evals/results.json")
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("run input set differs", result.stderr)
+
+    def test_requires_recorded_eval_run(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            (checkout / "evals/run.json").unlink()
+            result = self.run_validator(checkout, "--results", "evals/results.json")
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("invalid eval run", result.stderr)
+
     def test_rejects_simulation_without_execution_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             checkout = self.copy_checkout(temp_dir)
