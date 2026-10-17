@@ -4,7 +4,7 @@
 
 The package is a thin semantic router. The Scaffold Source owns `template_delivery.py`, and suite contract v4; the target owns its product facts, extensions, and native checks. See [`docs/CONTRACT.md`](docs/CONTRACT.md).
 
-This checkout is an unpublished **5.0.0 candidate**. The installation commands below describe distribution coordinates; they do not publish or install this checkout.
+Version **5.0.0** supports suite contract v4 and migrates targets to native execution. Release tags identify published packages; branch checkouts are development sources.
 
 ## Install in Codex
 

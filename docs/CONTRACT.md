@@ -1,6 +1,6 @@
 # Project Migration Contract
 
-Status: local, unpublished 5.0.0 candidate; suite contract v4 is versioned independently.
+Package version: 5.0.0; suite contract v4 is versioned independently.
 
 Template Sync performs one explicit migration from the clean canonical source root. The source owns `template_delivery.py init/inspect/verify`; the target owns its product contracts, native execution, independent acceptance and deployment controls. Daily work needs no migration plugin.
 
