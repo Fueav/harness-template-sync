@@ -115,6 +115,28 @@ class EvalContractTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("run input set differs", result.stderr)
 
+    def test_rejects_chmod_only_fixture_changes(self) -> None:
+        for relative, mode in (("scripts/production_release_gate.sh", 0o644), ("product/order.json", 0o755)):
+            with self.subTest(input=relative), tempfile.TemporaryDirectory() as temp_dir:
+                checkout = self.copy_checkout(temp_dir)
+                fixture = checkout / "evals/fixtures/upgrade-native/target" / relative
+                fixture.chmod(mode)
+                result = self.run_validator(checkout, "--results", "evals/results.json")
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("run input mode differs", result.stderr)
+
+    def test_rejects_same_content_fixture_symlink(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = self.copy_checkout(temp_dir)
+            fixture = checkout / "evals/fixtures/upgrade-native/target/scripts/production_release_gate.sh"
+            original = Path(temp_dir) / "original.sh"
+            shutil.copy2(fixture, original)
+            fixture.unlink()
+            fixture.symlink_to(original)
+            result = self.run_validator(checkout, "--results", "evals/results.json")
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("run input must be a regular file", result.stderr)
+
     def test_requires_recorded_eval_run(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             checkout = self.copy_checkout(temp_dir)

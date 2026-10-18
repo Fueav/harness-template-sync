@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import stat
 import sys
 from pathlib import Path
 
@@ -19,6 +20,13 @@ SKILL_FILES = (
     Path("plugins/harness-template-sync/skills/harness-template-sync/SKILL.md"),
     Path("plugins/harness-template-sync/skills/harness-template-sync/agents/openai.yaml"),
 )
+# Contract-3 fixtures are regular Git files, 100644 except these 100755 entries.
+# Modes match the original target commits; historical evidence stays unchanged.
+EXECUTABLE_FIXTURES = {
+    "upgrade-native/target/harness/gates/release_self_tests.sh",
+    "upgrade-native/target/scripts/production_release_gate.sh",
+    "upgrade-native/target/scripts/run_checker_self_tests.sh",
+}
 
 
 def load(path: Path) -> object:
@@ -58,12 +66,23 @@ def validate_run(cases: list[dict], errors: list[str]) -> None:
         recorded = run.get("input_sha256")
         if not isinstance(recorded, dict):
             raise ValueError("run input digests must be an object")
-        current = {
-            path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
-            for case in cases
-            for path in (EVALS / "fixtures" / case["id"]).rglob("*")
-            if path.is_file()
-        }
+        current = {}
+        fixtures = EVALS / "fixtures"
+        if not stat.S_ISDIR(fixtures.lstat().st_mode):
+            raise ValueError("fixture root must be a real directory")
+        for case in cases:
+            fixture = fixtures / case["id"]
+            for path in (fixture, *fixture.rglob("*")):
+                mode = path.lstat().st_mode
+                if stat.S_ISDIR(mode):
+                    continue
+                relative = path.relative_to(ROOT).as_posix()
+                if not stat.S_ISREG(mode):
+                    raise ValueError("run input must be a regular file: " + relative)
+                expected_mode = 0o755 if path.relative_to(fixtures).as_posix() in EXECUTABLE_FIXTURES else 0o644
+                if stat.S_IMODE(mode) != expected_mode:
+                    raise ValueError("run input mode differs: " + relative)
+                current[relative] = hashlib.sha256(path.read_bytes()).hexdigest()
         if set(recorded) != set(current):
             raise ValueError("run input set differs from current case fixtures")
         changed = [path for path, digest in current.items() if recorded[path] != digest]
