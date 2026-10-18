@@ -4,9 +4,9 @@
   "decision": "continue",
   "required_actions": {
     "README.md": "preserve",
-    "AGENTS.md": "add",
-    "BLUEPRINT.md": "add",
-    "harness/scaffold.lock": "regenerate"
+    "harness/project.json": "add",
+    "harness/harness.lock": "add",
+    ".ai-boundaries.yml": "add"
   },
   "required_gates": []
 }

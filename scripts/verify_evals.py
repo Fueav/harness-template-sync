@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import stat
 import sys
 from pathlib import Path
 
@@ -14,10 +15,18 @@ ROOT = Path(__file__).resolve().parents[1]
 EVALS = ROOT / "evals"
 ACTIONS = {"preserve", "add", "merge", "relocate", "retire", "regenerate", "blocked"}
 MODES = {"bootstrap", "upgrade"}
+EVAL_CONTRACT_VERSION = 3
 SKILL_FILES = (
     Path("plugins/harness-template-sync/skills/harness-template-sync/SKILL.md"),
     Path("plugins/harness-template-sync/skills/harness-template-sync/agents/openai.yaml"),
 )
+# Contract-3 fixtures are regular Git files, 100644 except these 100755 entries.
+# Modes match the original target commits; historical evidence stays unchanged.
+EXECUTABLE_FIXTURES = {
+    "upgrade-native/target/harness/gates/release_self_tests.sh",
+    "upgrade-native/target/scripts/production_release_gate.sh",
+    "upgrade-native/target/scripts/run_checker_self_tests.sh",
+}
 
 
 def load(path: Path) -> object:
@@ -39,6 +48,48 @@ def target_paths(case_id: str) -> set[str]:
         for path in target.rglob("*")
         if path.is_file() or path.is_symlink()
     }
+
+
+def accepted_actions(value: object) -> list[str]:
+    return value if isinstance(value, list) else [value]
+
+
+def validate_run(cases: list[dict], errors: list[str]) -> None:
+    try:
+        run = load(EVALS / "run.json")
+        if not isinstance(run, dict) or run.get("schema_version") != 1:
+            raise ValueError("invalid run contract")
+        if run.get("eval_contract_version") != EVAL_CONTRACT_VERSION:
+            raise ValueError("stale run eval contract version")
+        if run.get("skill_package_sha256") != skill_package_sha256():
+            raise ValueError("stale run skill package digest")
+        recorded = run.get("input_sha256")
+        if not isinstance(recorded, dict):
+            raise ValueError("run input digests must be an object")
+        current = {}
+        fixtures = EVALS / "fixtures"
+        if not stat.S_ISDIR(fixtures.lstat().st_mode):
+            raise ValueError("fixture root must be a real directory")
+        for case in cases:
+            fixture = fixtures / case["id"]
+            for path in (fixture, *fixture.rglob("*")):
+                mode = path.lstat().st_mode
+                if stat.S_ISDIR(mode):
+                    continue
+                relative = path.relative_to(ROOT).as_posix()
+                if not stat.S_ISREG(mode):
+                    raise ValueError("run input must be a regular file: " + relative)
+                expected_mode = 0o755 if path.relative_to(fixtures).as_posix() in EXECUTABLE_FIXTURES else 0o644
+                if stat.S_IMODE(mode) != expected_mode:
+                    raise ValueError("run input mode differs: " + relative)
+                current[relative] = hashlib.sha256(path.read_bytes()).hexdigest()
+        if set(recorded) != set(current):
+            raise ValueError("run input set differs from current case fixtures")
+        changed = [path for path, digest in current.items() if recorded[path] != digest]
+        if changed:
+            raise ValueError("run input digest differs: " + ", ".join(sorted(changed)))
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        errors.append(f"invalid eval run: {error}")
 
 
 def validate_fixture(case: dict, errors: list[str]) -> dict:
@@ -64,7 +115,9 @@ def validate_fixture(case: dict, errors: list[str]) -> dict:
         errors.append(f"{case_id}: expected decision is invalid")
     required = expected.get("required_actions")
     if not isinstance(required, dict) or any(
-        not isinstance(path, str) or action not in ACTIONS
+        not isinstance(path, str)
+        or not accepted_actions(action)
+        or any(not isinstance(item, str) or item not in ACTIONS for item in accepted_actions(action))
         for path, action in required.items()
     ):
         errors.append(f"{case_id}: required_actions is invalid")
@@ -89,12 +142,14 @@ def validate_fixture(case: dict, errors: list[str]) -> dict:
 def validate_results(
     cases: list[dict], expected_by_id: dict[str, dict], payload: object, errors: list[str]
 ) -> None:
-    expected_fields = {"schema_version", "skill_package_sha256", "results"}
+    expected_fields = {"schema_version", "eval_contract_version", "skill_package_sha256", "results"}
     if not isinstance(payload, dict) or set(payload) != expected_fields:
         errors.append("result payload has an invalid contract")
         return
     if payload.get("schema_version") != 1:
         errors.append("result payload has an invalid schema version")
+    if payload.get("eval_contract_version") != EVAL_CONTRACT_VERSION:
+        errors.append("result payload has a stale eval contract version")
     if payload.get("skill_package_sha256") != skill_package_sha256():
         errors.append("result payload has a stale skill package digest")
     results = payload.get("results")
@@ -144,7 +199,7 @@ def validate_results(
                 continue
             action_by_path[path] = action
         for path, action in expected.get("required_actions", {}).items():
-            if action_by_path.get(path) != action:
+            if action_by_path.get(path) not in accepted_actions(action):
                 errors.append(f"{case_id}: {path} must be {action}")
         for path, forbidden in expected.get("forbidden_actions", {}).items():
             if action_by_path.get(path) in forbidden:
@@ -169,6 +224,37 @@ def validate_results(
             delta = result.get("prompt_skill_line_delta")
             if not isinstance(delta, int) or delta > expected["max_prompt_skill_line_delta"]:
                 errors.append(f"{case_id}: prompt/Skill line budget exceeded")
+        execution = result.get("execution")
+        if not isinstance(execution, dict) or set(execution) != {"artifact", "sha256"}:
+            errors.append(f"{case_id}: missing executed model evidence")
+        else:
+            artifact = EVALS / str(execution["artifact"])
+            try:
+                if not artifact.resolve().is_relative_to((EVALS / "evidence").resolve()):
+                    raise ValueError("artifact must stay inside evals/evidence")
+                raw = artifact.read_bytes()
+                if hashlib.sha256(raw).hexdigest() != execution["sha256"]:
+                    raise ValueError("execution artifact digest differs")
+                observed = json.loads(raw)
+                if observed.get("case_id") != case_id or observed.get("kind") != "parent-verification":
+                    raise ValueError("wrong execution artifact identity")
+                if not observed.get("model_task") or not observed.get("model_response"):
+                    raise ValueError("missing executed model task or response")
+                if result["decision"] == "continue":
+                    checks = observed.get("checks", [])
+                    for command in ("migration-structure", *expected.get("required_gates", [])):
+                        if not any(c.get("name") == command and c.get("returncode") == 0
+                                   and c.get("argv") and "stdout" in c for c in checks):
+                            raise ValueError(f"missing successful parent check {command}")
+                    if observed.get("verification_scope") != "migration-structure":
+                        raise ValueError("source verification is not product acceptance")
+                elif expected.get("protected_paths"):
+                    if observed.get("protected_paths_unchanged") is not True:
+                        raise ValueError("protected owner changes were not checked unchanged")
+                elif observed.get("target_unchanged") is not True:
+                    raise ValueError("blocked target was not independently checked unchanged")
+            except (OSError, ValueError, TypeError, AttributeError) as error:
+                errors.append(f"{case_id}: invalid executed model evidence: {error}")
         evidence = result.get("evidence")
         if (
             not isinstance(evidence, list)
@@ -185,7 +271,7 @@ def main() -> int:
     args = parser.parse_args()
     errors: list[str] = []
     manifest = load(EVALS / "cases.json")
-    if not isinstance(manifest, dict) or set(manifest) != {"schema_version", "cases"}:
+    if not isinstance(manifest, dict) or set(manifest) != {"schema_version", "eval_contract_version", "cases"}:
         errors.append("cases.json has an invalid contract")
         cases: list[dict] = []
     else:
@@ -193,6 +279,8 @@ def main() -> int:
         if manifest.get("schema_version") != 1 or not isinstance(cases, list):
             errors.append("cases.json must use schema version 1 and a cases array")
             cases = []
+        if manifest.get("eval_contract_version") != EVAL_CONTRACT_VERSION:
+            errors.append("cases.json has a stale eval contract version")
     ids = [case.get("id") for case in cases if isinstance(case, dict)]
     if len(ids) != len(set(ids)):
         errors.append("case ids must be unique")
@@ -205,6 +293,7 @@ def main() -> int:
     if not isinstance(schema, dict) or schema.get("type") != "object":
         errors.append("result schema is invalid")
     if args.results:
+        validate_run(cases, errors)
         try:
             results = load(args.results)
         except (OSError, json.JSONDecodeError) as error:

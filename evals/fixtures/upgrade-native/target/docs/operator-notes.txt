@@ -1,0 +1,1 @@
+Manual settlement cutoff is 17:00 UTC. Ownership is undocumented; preserve this file.

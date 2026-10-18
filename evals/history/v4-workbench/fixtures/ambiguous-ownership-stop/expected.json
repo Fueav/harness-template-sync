@@ -4,7 +4,10 @@
   "decision": "blocked",
   "required_actions": {
     "scripts/unknown_policy.sh": "blocked",
-    "harness/scaffold.lock": "preserve"
+    "harness/scaffold.lock": [
+      "preserve",
+      "retire"
+    ]
   },
   "forbidden_actions": {
     "scripts/unknown_policy.sh": [

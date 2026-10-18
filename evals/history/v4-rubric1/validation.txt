@@ -1,0 +1,3 @@
+FAIL: ambiguous-ownership-stop: harness/scaffold.lock must be preserve
+FAIL: upgrade-custom-gates: docs/harness-workflows.md must be relocate
+FAIL: upgrade-custom-gates: harness/harness_profiles.json must be retire

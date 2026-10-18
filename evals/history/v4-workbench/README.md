@@ -1,0 +1,5 @@
+# Delivery evaluation evidence
+
+The 2026-10-16 Astra run used independent, expectation-blind simulations against the v4 Skill, frozen source contract v3, target files and request context. `results.json` is unchanged model output; `run.json` identifies the model and frozen input/output digests. No simulated command is reported as executed.
+The first v4 run remains failed in `history/v4-rubric1/`, with its raw output, prior expectations and validation errors. Contract v2 permits equivalent retirement/relocation of old configuration, preservation/relocation of target-owned rollout documentation, and proposed historical-record retirement while unknown ownership remains blocked. Required native gates and ownership blockers remain mandatory. A fresh blind run passed all seven cases after this rubric was frozen; the failed run was not relabeled.
+Package digests bind assessments to the Skill. These cases evaluate routing and preservation decisions; actual migration and product outcomes require separate source verification and target-native acceptance.

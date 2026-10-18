@@ -1,0 +1,127 @@
+{
+  "upgrade-hidden-release-gate": {
+    "case_id": "upgrade-hidden-release-gate",
+    "mode": "upgrade",
+    "decision": "continue",
+    "required_actions": {
+      "AGENTS.md": "merge",
+      "harness/harness_profiles.json": "retire",
+      "harness/gates/release_self_tests.sh": "retire",
+      "harness/scaffold.lock": "retire",
+      "scripts/run_checker_self_tests.sh": "retire",
+      "scripts/production_release_gate.sh": "preserve",
+      "harness/project.json": "add",
+      "harness/harness.lock": "add",
+      ".ai-boundaries.yml": "add"
+    },
+    "forbidden_actions": {
+      "harness/gates/release_self_tests.sh": [
+        "preserve",
+        "merge"
+      ],
+      "harness/scaffold.lock": [
+        "preserve",
+        "merge"
+      ],
+      "scripts/run_checker_self_tests.sh": [
+        "preserve",
+        "merge"
+      ],
+      "scripts/production_release_gate.sh": [
+        "retire"
+      ]
+    },
+    "required_gates": [
+      "scripts/production_release_gate.sh"
+    ],
+    "forbidden_gates": [
+      "harness/gates/release_self_tests.sh",
+      "scripts/run_checker_self_tests.sh"
+    ]
+  },
+  "dirty-target-stop": {
+    "case_id": "dirty-target-stop",
+    "mode": "bootstrap",
+    "decision": "blocked",
+    "required_actions": {
+      ".dirty-change": "preserve"
+    }
+  },
+  "ambiguous-ownership-stop": {
+    "case_id": "ambiguous-ownership-stop",
+    "mode": "upgrade",
+    "decision": "blocked",
+    "required_actions": {
+      "scripts/unknown_policy.sh": "blocked",
+      "harness/scaffold.lock": "preserve"
+    },
+    "forbidden_actions": {
+      "scripts/unknown_policy.sh": [
+        "retire",
+        "merge"
+      ]
+    }
+  },
+  "upgrade-custom-gates": {
+    "case_id": "upgrade-custom-gates",
+    "mode": "upgrade",
+    "decision": "continue",
+    "required_actions": {
+      "harness/harness_profiles.json": "retire",
+      "harness/scaffold.lock": "retire",
+      "scripts/gates/custom_check.sh": "preserve",
+      "docs/harness-workflows.md": "relocate",
+      "harness/project.json": "add",
+      "harness/harness.lock": "add",
+      ".ai-boundaries.yml": "add"
+    },
+    "forbidden_actions": {
+      "scripts/gates/custom_check.sh": [
+        "retire"
+      ]
+    },
+    "required_gates": [
+      "scripts/gates/custom_check.sh"
+    ]
+  },
+  "wrong-source-stop": {
+    "case_id": "wrong-source-stop",
+    "mode": "upgrade",
+    "decision": "blocked",
+    "required_actions": {
+      "README.md": "preserve"
+    }
+  },
+  "bootstrap-blank": {
+    "case_id": "bootstrap-blank",
+    "mode": "bootstrap",
+    "decision": "continue",
+    "required_actions": {
+      "README.md": "preserve",
+      "harness/project.json": "add",
+      "harness/harness.lock": "add",
+      ".ai-boundaries.yml": "add"
+    },
+    "required_gates": []
+  },
+  "bootstrap-mature": {
+    "case_id": "bootstrap-mature",
+    "mode": "bootstrap",
+    "decision": "continue",
+    "required_actions": {
+      "AGENTS.md": "preserve",
+      "scripts/native_check.sh": "preserve",
+      "harness/project.json": "add",
+      "harness/harness.lock": "add",
+      ".ai-boundaries.yml": "add"
+    },
+    "forbidden_actions": {
+      "scripts/native_check.sh": [
+        "retire"
+      ]
+    },
+    "required_gates": [
+      "scripts/native_check.sh"
+    ]
+  }
+}

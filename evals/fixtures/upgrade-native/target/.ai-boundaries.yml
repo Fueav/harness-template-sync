@@ -1,0 +1,3 @@
+protected_paths:
+  - scripts/production_release_gate.sh
+  - docs/operator-notes.txt

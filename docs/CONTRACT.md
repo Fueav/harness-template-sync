@@ -1,11 +1,11 @@
-# Template Delivery Contract
+# Project Migration Contract
 
-Status: v3.2 release contract.
+Package version: 5.0.0; suite contract v4 is versioned independently.
 
-Template Sync adapts one clean Target Repository from the exact canonical Scaffold Source root. The source repository owns executable delivery interfaces; targets own business contracts, deployment, native checks and custom gates. Daily work needs neither this plugin nor delivery convergence.
+Template Sync performs one explicit migration from the clean canonical source root. The source owns `template_delivery.py init/inspect/verify`; the target owns its product contracts, native execution, independent acceptance and deployment controls. Daily work needs no migration plugin.
 
-Preflight verifies source identity, target state and bootstrap/upgrade intent, and returns the differences. Semantic merging preserves target ownership; the owner's explicit simplification scope can change shared workflow controls, but cannot silently remove unrelated native requirements. Finalization records path resolutions, checks the candidate and verifies clean convergence. Report source/target revisions and completed checks. A failed gate blocks completion, not authorized repair.
+Inspect source identity and target state before changing files. Preserve unrelated dirty work, target-owned checks, boundaries and unknown content. Resolve material ownership conflicts before changing those paths. Remove retired runtime paths after their product checks remain reachable through native commands. No engine, descriptor, lock, receipt, compatibility entry or second runtime is delivered.
 
-The scaffold lock records the last delivery, not daily permission. Source guards, boundary checks and Git protect execution; unknown ownership stops the affected change. Do not vendor the engine, add target inventories, or launch background maintenance. Delivery does not authorize deployment or unrelated installation.
+Source `verify` requires clean source and target candidates and proves only migration structure. Execute the target's native checks and independent acceptance when defined; report their actual results separately, with revisions and gaps. A structural pass is not product or deployment acceptance. Migration grants no deployment, background maintenance or unrelated installation authority.
 
-The package releases independently. Packaging validation checks paths, versions and compatibility. Evaluation covers per-path ownership decisions; source suite tests execute bootstrap/upgrade and failure cases. Exact wording is not a release criterion.
+The package releases independently. Packaging checks validate shape and compatibility; expectation-blind model evals execute bounded migrations, followed by independent parent verification. Historical simulations remain historical evidence.

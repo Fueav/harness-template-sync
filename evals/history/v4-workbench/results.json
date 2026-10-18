@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "skill_package_sha256": "de49cbbf77d39bf6f577f457dc1fa09821b411cf41c24d9f0a150c715b74215c",
+  "results": [
+    {
+      "case_id": "bootstrap-blank",
+      "mode": "bootstrap",
+      "decision": "continue",
+      "path_decisions": [
+        {"path": "README.md", "action": "preserve"},
+        {"path": ".ai-boundaries.yml", "action": "add"},
+        {"path": "harness/harness.lock", "action": "add"},
+        {"path": "harness/project.json", "action": "add"}
+      ],
+      "blockers": [],
+      "target_gates": [],
+      "evidence": [
+        "Canonical source identity and a clean candidate are supplied facts. All actions are proposed; no commands, inspection, mutations, or checks executed.",
+        "Add project-specific boundaries and descriptor plus the exact canonical engine lock. No product behavior or native gates are supplied; do not invent them.",
+        "Proposed verification: from the clean canonical source root, run harness/template_delivery.py inspect --target ABSOLUTE_PATH, then verify --target ABSOLUTE_PATH --compare-ref REF. Record actual source and target revisions, comparison reference, check results, and remaining gaps."
+      ]
+    },
+    {
+      "case_id": "bootstrap-mature",
+      "mode": "bootstrap",
+      "decision": "continue",
+      "path_decisions": [
+        {"path": "AGENTS.md", "action": "preserve"},
+        {"path": "scripts/native_check.sh", "action": "preserve"},
+        {"path": ".ai-boundaries.yml", "action": "add"},
+        {"path": "harness/harness.lock", "action": "add"},
+        {"path": "harness/project.json", "action": "add"}
+      ],
+      "blockers": [],
+      "target_gates": ["scripts/native_check.sh"],
+      "evidence": [
+        "Canonical source identity and a clean candidate are supplied facts. All actions are proposed; nothing executed or independently inspected.",
+        "Preserve broker-assigned order identifiers and the mandatory native check before handoff. Reference that native operation in the new project descriptor; add adapted boundaries and the exact canonical engine lock.",
+        "Proposed verification: canonical-root inspect, scripts/native_check.sh, and canonical-root verify --target ABSOLUTE_PATH --compare-ref REF. Confirm descriptor reachability and preservation of the identifier contract; record actual revisions and results."
+      ]
+    },
+    {
+      "case_id": "upgrade-custom-gates",
+      "mode": "upgrade",
+      "decision": "continue",
+      "path_decisions": [
+        {"path": "docs/harness-workflows.md", "action": "preserve"},
+        {"path": "harness/harness_profiles.json", "action": "retire"},
+        {"path": "harness/scaffold.lock", "action": "retire"},
+        {"path": "scripts/gates/custom_check.sh", "action": "preserve"},
+        {"path": ".ai-boundaries.yml", "action": "add"},
+        {"path": "harness/harness.lock", "action": "add"},
+        {"path": "harness/project.json", "action": "add"}
+      ],
+      "blockers": [],
+      "target_gates": ["scripts/gates/custom_check.sh"],
+      "evidence": [
+        "All actions are proposed from supplied facts; no commands, mutations, or checks executed. The legacy scaffold lock is historical input, not current delivery evidence.",
+        "Preserve mandatory project rollout approval in docs/harness-workflows.md. Move the project_contract gate registration into native operations referenced by harness/project.json before retiring harness/harness_profiles.json.",
+        "Replace the obsolete scaffold lock with the exact canonical engine lock and add project-specific boundaries.",
+        "Proposed verification: canonical-root inspect, scripts/gates/custom_check.sh, and canonical-root verify --target ABSOLUTE_PATH --compare-ref REF. Confirm native gate reachability and retained rollout approval; record actual revisions and results."
+      ]
+    },
+    {
+      "case_id": "upgrade-hidden-release-gate",
+      "mode": "upgrade",
+      "decision": "continue",
+      "path_decisions": [
+        {"path": "AGENTS.md", "action": "merge"},
+        {"path": "harness/gates/release_self_tests.sh", "action": "retire"},
+        {"path": "harness/harness_profiles.json", "action": "retire"},
+        {"path": "harness/scaffold.lock", "action": "retire"},
+        {"path": "scripts/production_release_gate.sh", "action": "preserve"},
+        {"path": "scripts/run_checker_self_tests.sh", "action": "retire"},
+        {"path": ".ai-boundaries.yml", "action": "add"},
+        {"path": "harness/harness.lock", "action": "add"},
+        {"path": "harness/project.json", "action": "add"}
+      ],
+      "blockers": [],
+      "target_gates": ["scripts/production_release_gate.sh"],
+      "evidence": [
+        "History attribution, owner authorization, and the complete bounded wrapper-caller set are supplied audit facts. No Git comparison, command, mutation, or check executed.",
+        "Remove the authorized inherited every-deployment Specification requirement from AGENTS.md. Replace its wrapper invocation with the native production gate, preserving the project gate's deployment enforcement.",
+        "Reference scripts/production_release_gate.sh directly through the new project descriptor. Retire the wrapper, old profile, and inherited checker only after their callers are migrated and the production check remains reachable.",
+        "Retire the historical scaffold lock; add the exact canonical engine lock and adapted boundaries. No legacy checker fallback is required.",
+        "Proposed verification: canonical-root inspect, scripts/production_release_gate.sh, caller and gate-reachability checks, and canonical-root verify --target ABSOLUTE_PATH --compare-ref REF. Record actual revisions and results; supplied audit facts are not execution evidence."
+      ]
+    },
+    {
+      "case_id": "ambiguous-ownership-stop",
+      "mode": "upgrade",
+      "decision": "blocked",
+      "path_decisions": [
+        {"path": "harness/scaffold.lock", "action": "retire"},
+        {"path": "scripts/unknown_policy.sh", "action": "blocked"},
+        {"path": ".ai-boundaries.yml", "action": "add"},
+        {"path": "harness/harness.lock", "action": "add"},
+        {"path": "harness/project.json", "action": "add"}
+      ],
+      "blockers": [
+        "The incoming scripts/unknown_policy.sh differs from the target, but neither a prior baseline nor an ownership decision resolves the material collision. Resolve ownership and required policy semantics before changing that path."
+      ],
+      "target_gates": [],
+      "evidence": [
+        "The collision is a supplied inspection finding, not an inspection performed here. All actions describe a proposed final migration; no mutation or verification occurred.",
+        "Keep scripts/unknown_policy.sh unchanged pending resolution. Its name and contents do not establish whether it is a target native gate or obsolete scaffold content.",
+        "The historical scaffold lock cannot authorize replacement. Its proposed retirement and the three required additions remain deferred with the blocked migration.",
+        "After ownership resolution, use canonical-root inspect, preserve any established native policy checks, and run verify --target ABSOLUTE_PATH --compare-ref REF. Record actual revisions, resolution evidence, and check results."
+      ]
+    },
+    {
+      "case_id": "dirty-target-stop",
+      "mode": "bootstrap",
+      "decision": "blocked",
+      "path_decisions": [
+        {"path": ".dirty-change", "action": "preserve"},
+        {"path": ".ai-boundaries.yml", "action": "add"},
+        {"path": "harness/harness.lock", "action": "add"},
+        {"path": "harness/project.json", "action": "add"}
+      ],
+      "blockers": [
+        "Unrelated uncommitted user work is present, and no clean isolated target candidate has been provided. Establish a clean isolated candidate while preserving that work before mutation."
+      ],
+      "target_gates": [],
+      "evidence": [
+        "Dirty state is a supplied fact. No commands, file inspection, isolation, mutations, or checks executed.",
+        "Preserve .dirty-change. Required additions describe the proposed final migration and remain unapplied.",
+        "Once a clean isolated candidate exists, use canonical-root inspect, adapt the descriptor and boundaries, obtain the exact canonical engine lock, and run verify --target ABSOLUTE_PATH --compare-ref REF. Record actual revisions and results."
+      ]
+    },
+    {
+      "case_id": "wrong-source-stop",
+      "mode": "upgrade",
+      "decision": "blocked",
+      "path_decisions": [
+        {"path": "README.md", "action": "preserve"},
+        {"path": ".ai-boundaries.yml", "action": "add"},
+        {"path": "harness/harness.lock", "action": "add"},
+        {"path": "harness/project.json", "action": "add"}
+      ],
+      "blockers": [
+        "The invocation directory is a target repository rather than the clean canonical github.com/moss-site/ai-first-go-template source root. Correct the invocation source before proceeding."
+      ],
+      "target_gates": [],
+      "evidence": [
+        "The incorrect invocation location is a supplied fact. No commands, inspection, mutations, or checks executed.",
+        "Preserve README.md. The required additions are proposed final actions and remain unapplied; the similar target checkout provides no canonical source authority.",
+        "After correcting the source root, run inspect --target ABSOLUTE_PATH through canonical harness/template_delivery.py, obtain its exact engine lock, adapt the project descriptor and boundaries, and run verify --target ABSOLUTE_PATH --compare-ref REF. Record actual revisions and results."
+      ]
+    }
+  ],
+  "eval_contract_version": 2
+}

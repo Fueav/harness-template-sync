@@ -3,10 +3,19 @@
   "mode": "upgrade",
   "decision": "continue",
   "required_actions": {
-    "harness/harness_profiles.json": "merge",
-    "harness/scaffold.lock": "regenerate",
+    "harness/harness_profiles.json": [
+      "retire",
+      "relocate"
+    ],
+    "harness/scaffold.lock": "retire",
     "scripts/gates/custom_check.sh": "preserve",
-    "docs/harness-workflows.md": "merge"
+    "docs/harness-workflows.md": [
+      "preserve",
+      "relocate"
+    ],
+    "harness/project.json": "add",
+    "harness/harness.lock": "add",
+    ".ai-boundaries.yml": "add"
   },
   "forbidden_actions": {
     "scripts/gates/custom_check.sh": [
